@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📚 문서 확인
+    url: https://github.com/CoreClass-Backend/wiki
+    about: 프로젝트 문서와 API 가이드를 확인해보세요
+  - name: 💬 질문하기
+    url: https://github.com/CoreClass-Backend/discussions
+    about: 질문이나 의견이 있으시면 Discussion을 이용해주세요
