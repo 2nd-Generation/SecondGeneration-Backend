@@ -21,17 +21,13 @@ public class CareerHistory extends BaseEntity {
     @JoinColumn(name = "instructor_id", nullable = false)
     private Instructor instructor;
 
-//    @Enumerated(EnumType.STRING) // Enum 이름을 DB에 문자열로 저장
-//    @Column(name = "career_type", nullable = false)
-//    private CareerType careerType; // PLAYER 또는 COACH
-
-
     @Column(nullable = false)
     private String period; // "2018", "2022-2023"
 
     @Column(name = "team_name", nullable = false)
     private String teamName; // "SkyFoxes"
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "role_type")
     private RoleType roleType; // "Head Coach"
 
