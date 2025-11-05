@@ -30,7 +30,15 @@ public class Instructor extends BaseEntity {
     @Column(name = "current_title")
     private String currentTitle; // "Head/Coach"
 
+    @Column(name = "sgea_logo_img_url")
+    private String sgeaLogoImgUrl;
+
+    @Column(name = "content")
+    private String content;
+
     private LocalDateTime inactiveAt; // Soft Delete 용
+
+
 
     // Instructor(1) : InstructorGame(N)
     @OneToMany(mappedBy = "instructor", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -1,7 +1,7 @@
 package com.web.coreclass.domain.instructor.dto;
 
 import com.web.coreclass.domain.careerHistory.entity.CareerHistory;
-import com.web.coreclass.domain.careerHistory.entity.CareerType;
+import com.web.coreclass.domain.careerHistory.entity.RoleType;
 import com.web.coreclass.domain.game.entity.Game;
 import com.web.coreclass.domain.instructor.entity.Instructor;
 import lombok.Getter;
@@ -10,6 +10,7 @@ import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class InstructorDto {
@@ -24,6 +25,8 @@ public class InstructorDto {
         private String name;
         private String profileImgUrl;
         private String currentTitle;
+        private String sgeaLogoImgUrl;
+        private String content;
         private List<CareerHistoryRequest> careers;
         private List<String> gameNames; // e.g., ["Valorant", "League of Legends"]
 
@@ -31,19 +34,17 @@ public class InstructorDto {
         @Setter
         @ToString
         public static class CareerHistoryRequest {
-            private CareerType careerType;
             private String period;
-            private String organizationName;
-            private String roleTitle;
+            private String teamName;
+            private RoleType roleType;
             private String logoImgUrl;
 
             // DTO -> Entity 변환 메서드
             public CareerHistory toEntity() {
                 CareerHistory history = new CareerHistory();
-                history.setCareerType(this.careerType);
                 history.setPeriod(this.period);
-                history.setOrganizationName(this.organizationName);
-                history.setRoleTitle(this.roleTitle);
+                history.setTeamName(this.teamName);
+                history.setRoleType(this.roleType);
                 history.setLogoImgUrl(this.logoImgUrl);
                 return history;
             }
@@ -60,8 +61,10 @@ public class InstructorDto {
         private String name;
         private String profileImgUrl;
         private String currentTitle;
-        private List<CareerHistoryResponse> careers;
-        private List<GameResponse> games;
+        private String sgeaLogoImgUrl;
+        private String content;
+        private Set<CareerHistoryResponse> careers;
+        private Set<GameResponse> games;
         private LocalDateTime createdAt;
 
         // 경력 상세 DTO (Nested)
@@ -69,18 +72,16 @@ public class InstructorDto {
         @ToString
         public static class CareerHistoryResponse {
             private Long id;
-            private CareerType careerType;
             private String period;
-            private String organizationName;
-            private String roleTitle;
+            private String teamName;
+            private RoleType roleType;
             private String logoImgUrl;
 
             public CareerHistoryResponse(CareerHistory history) {
                 this.id = history.getId();
-                this.careerType = history.getCareerType();
                 this.period = history.getPeriod();
-                this.organizationName = history.getOrganizationName();
-                this.roleTitle = history.getRoleTitle();
+                this.teamName = history.getTeamName();
+                this.roleType = history.getRoleType();
                 this.logoImgUrl = history.getLogoImgUrl();
             }
         }
@@ -106,16 +107,18 @@ public class InstructorDto {
             this.name = instructor.getName();
             this.profileImgUrl = instructor.getProfileImgUrl();
             this.currentTitle = instructor.getCurrentTitle();
+            this.sgeaLogoImgUrl = instructor.getSgeaLogoImgUrl();
+            this.content = instructor.getContent();
             this.createdAt = instructor.getCreatedAt();
 
             // 엔티티 리스트 -> DTO 리스트로 변환
             this.careers = instructor.getCareerHistories().stream()
                     .map(CareerHistoryResponse::new)
-                    .collect(Collectors.toList());
+                    .collect(Collectors.toSet());
 
             this.games = instructor.getGames().stream()
                     .map(instructorGame -> new GameResponse(instructorGame.getGame()))
-                    .collect(Collectors.toList());
+                    .collect(Collectors.toSet());
         }
     }
 }

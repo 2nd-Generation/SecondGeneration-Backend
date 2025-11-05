@@ -1,6 +1,6 @@
 package com.web.coreclass;
 
-import com.web.coreclass.domain.careerHistory.entity.CareerType;
+import com.web.coreclass.domain.careerHistory.entity.RoleType;
 import com.web.coreclass.domain.game.entity.Game;
 import com.web.coreclass.domain.game.repository.GameRepository;
 import com.web.coreclass.domain.instructor.dto.InstructorDto;
@@ -56,20 +56,22 @@ public class InstructorServiceTest {
         log.info("===== 🏁 강사 생성(C) 테스트 시작 =====");
         // 1. Career DTO 준비
         var career1 = new InstructorDto.CreateRequest.CareerHistoryRequest();
-        career1.setCareerType(CareerType.PLAYER);
         career1.setPeriod("2018");
-        career1.setOrganizationName("SkyFoxes");
+        career1.setTeamName("SkyFoxes");
+        career1.setRoleType(RoleType.PLAYER);
 
         var career2 = new InstructorDto.CreateRequest.CareerHistoryRequest();
-        career2.setCareerType(CareerType.COACH);
         career2.setPeriod("2019");
-        career2.setOrganizationName("Eternity Gaming");
-        career2.setRoleTitle("Head Coach");
+        career2.setTeamName("Eternity Gaming");
+        career2.setRoleType(RoleType.HEAD_COACH);
+
 
         // 2. Main Request DTO 준비
         var request = new InstructorDto.CreateRequest();
         request.setName("Rexi 서재원");
         request.setCurrentTitle("Head/Coach");
+        request.setSgeaLogoImgUrl("sgea_logo.png");
+        request.setContent("메이저 리그 출신...");
         request.setCareers(List.of(career1, career2));
         request.setGameNames(List.of("Valorant", "League of Legends")); // setup에서 저장한 게임 이름
 
@@ -93,19 +95,26 @@ public class InstructorServiceTest {
                 .orElseThrow(() -> new AssertionError("강사가 DB에 저장되지 않았습니다."));
 
         log.info("👀 조회된 강사 이름: {}", findInstructor.getName());
+        log.info("👀 조회된 강사 SGEA 로고: {}", findInstructor.getSgeaLogoImgUrl());
         log.info("👀 조회된 경력 수: {}", findInstructor.getCareerHistories().size());
         log.info("👀 조회된 게임 수: {}", findInstructor.getGames().size());
 
         // 3. AssertJ로 검증
         assertThat(findInstructor.getId()).isEqualTo(instructorId);
         assertThat(findInstructor.getName()).isEqualTo("Rexi 서재원");
+        assertThat(findInstructor.getSgeaLogoImgUrl()).isEqualTo("sgea_logo.png");
+        assertThat(findInstructor.getContent()).isEqualTo("메이저 리그 출신...");
 
         // 4. 연관관계 검증 (수정된 부분)
         assertThat(findInstructor.getCareerHistories()).hasSize(2);
         // Set은 순서가 없으므로, 'organizationName' 필드만 추출하여 내용 검증
         assertThat(findInstructor.getCareerHistories())
-                .extracting("organizationName") // CareerHistory에서 organizationName 필드를 추출
+                .extracting("teamName") // CareerHistory에서 organizationName 필드를 추출
                 .containsExactlyInAnyOrder("SkyFoxes", "Eternity Gaming"); // 순서 상관없이 이 값들이 있는지 검증
+
+        assertThat(findInstructor.getCareerHistories())
+                .extracting("roleType") // ⬅️ 수정
+                .containsExactlyInAnyOrder(RoleType.PLAYER, RoleType.HEAD_COACH);
 
         assertThat(findInstructor.getGames()).hasSize(2);
         // Set에서 InstructorGame을 꺼내고, 다시 Game을 꺼내서 Name을 추출
@@ -125,13 +134,15 @@ public class InstructorServiceTest {
         // (실제로는 이 부분을 공통 메서드로 뽑아내는 것이 좋습니다)
         log.info("➡️ Given: 테스트용 강사 1명 생성 중...");
         var career1 = new InstructorDto.CreateRequest.CareerHistoryRequest();
-        career1.setCareerType(CareerType.PLAYER);
         career1.setPeriod("2018");
-        career1.setOrganizationName("SkyFoxes");
+        career1.setTeamName("SkyFoxes");
+        career1.setRoleType(RoleType.PLAYER);
 
         var request = new InstructorDto.CreateRequest();
         request.setName("Rexi 서재원");
         request.setCurrentTitle("Head/Coach");
+        request.setSgeaLogoImgUrl("sgea_logo.png");
+        request.setContent("메이저 리그 출신...");
         request.setCareers(List.of(career1));
         request.setGameNames(List.of("Valorant"));
 
@@ -155,13 +166,25 @@ public class InstructorServiceTest {
         log.info("👀 DTO 게임 수: {}", responseDto.getGames().size());
         assertThat(responseDto.getId()).isEqualTo(instructorId);
         assertThat(responseDto.getName()).isEqualTo("Rexi 서재원");
+        assertThat(responseDto.getSgeaLogoImgUrl()).isEqualTo("sgea_logo.png");
+        assertThat(responseDto.getContent()).isEqualTo("메이저 리그 출신...");
 
         // DTO 내부의 리스트 검증
         assertThat(responseDto.getCareers()).hasSize(1);
-        assertThat(responseDto.getCareers().get(0).getPeriod()).isEqualTo("2018");
+        assertThat(responseDto.getCareers())
+                .extracting("teamName") // ⬅️ 수정
+                .containsExactly("SkyFoxes");
+        assertThat(responseDto.getCareers())
+                .extracting("roleType") // ⬅️ 수정
+                .containsExactly(RoleType.PLAYER);
 
+        // ⬇️ 이 부분이 "Game DTO 검증 동일" 코드입니다. ⬇️
         assertThat(responseDto.getGames()).hasSize(1);
-        assertThat(responseDto.getGames().get(0).getName()).isEqualTo("Valorant");
+
+        // DTO의 Set<GameResponse>에서 'name' 필드만 추출합니다.
+        assertThat(responseDto.getGames())
+                .extracting("name") // GameResponse DTO의 'name' 필드
+                .containsExactly("Valorant"); // 순서가 1개라 InAnyOrder 대신 Exactly 사용
         log.info("===== ✅ 강사 조회(R) 테스트 통과 =====");
     }
 }
