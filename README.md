@@ -1,2 +1,2 @@
-# CoreClass-Backend
-CoreClass-Backend
+# SecondGeneration-Backend
+SecondGeneration-Backend
