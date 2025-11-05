@@ -28,6 +28,8 @@ public class InstructorService {
         instructor.setName(request.getName());
         instructor.setProfileImgUrl(request.getProfileImgUrl());
         instructor.setCurrentTitle(request.getCurrentTitle());
+        instructor.setSgeaLogoImgUrl(request.getSgeaLogoImgUrl());
+        instructor.setContent(request.getContent());
 
         // 2. CareerHistory 엔티티 생성 및 연관관계 매핑 (Cascade)
         request.getCareers().forEach(careerDto -> {

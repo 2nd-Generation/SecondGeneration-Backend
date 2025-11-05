@@ -1,6 +1,7 @@
 package com.web.coreclass.domain.careerHistory.entity;
 
-public enum CareerType {
+public enum RoleType {
     PLAYER,
-    COACH
+    COACH,
+    HEAD_COACH
 }
