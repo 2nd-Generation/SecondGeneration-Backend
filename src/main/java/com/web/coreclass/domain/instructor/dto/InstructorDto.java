@@ -32,9 +32,6 @@ public class InstructorDto {
         @Schema(description = "강사 프로필 이미지 Url", example = "null")
         private String profileImgUrl;
 
-        @Schema(description = "현재 역할(미사용 필드)", example = "미사용 필드 (추후 확장 가능성)")
-        private String currentTitle;
-
         @Schema(description = "SGEA 로고 이미지 Url", example = "null")
         private String sgeaLogoImgUrl;
 
@@ -85,7 +82,6 @@ public class InstructorDto {
         private String name;
         private String nickname;
         private String profileImgUrl;
-        private String currentTitle;
         private String sgeaLogoImgUrl;
         private String content;
         private Set<CareerHistoryResponse> careers;
@@ -132,7 +128,6 @@ public class InstructorDto {
             this.name = instructor.getName();
             this.nickname = instructor.getNickname();
             this.profileImgUrl = instructor.getProfileImgUrl();
-            this.currentTitle = instructor.getCurrentTitle();
             this.sgeaLogoImgUrl = instructor.getSgeaLogoImgUrl();
             this.content = instructor.getContent();
             this.createdAt = instructor.getCreatedAt();
@@ -158,7 +153,6 @@ public class InstructorDto {
         private String name;
         private String nickname;
         private String profileImgUrl;
-        private String currentTitle;
         private String sgeaLogoImgUrl;
         // ✅ 게임 목록은 포함 (게임 로고 이미지)
         private Set<InstructorDetailResponse.GameResponse> games;
@@ -169,7 +163,6 @@ public class InstructorDto {
             this.name = instructor.getName();
             this.nickname = instructor.getNickname();
             this.profileImgUrl = instructor.getProfileImgUrl();
-            this.currentTitle = instructor.getCurrentTitle();
             this.sgeaLogoImgUrl = instructor.getSgeaLogoImgUrl();
 
             // ✅ N+1 문제를 피하려면, Service에서 Fetch Join이 필요함

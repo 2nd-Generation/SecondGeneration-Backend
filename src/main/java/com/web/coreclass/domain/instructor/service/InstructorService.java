@@ -31,7 +31,6 @@ public class InstructorService {
         instructor.setName(request.getName());
         instructor.setNickname(request.getNickname());
         instructor.setProfileImgUrl(request.getProfileImgUrl());
-        instructor.setCurrentTitle(request.getCurrentTitle());
         instructor.setSgeaLogoImgUrl(request.getSgeaLogoImgUrl());
         instructor.setContent(request.getContent());
 
@@ -90,17 +89,38 @@ public class InstructorService {
     }
 
     /**
-     * (U) Update: 강사 정보 수정 (예시: 기본 정보만 수정)
+     * (U) Update: 강사 전체 정보 덮어쓰기 (PUT)
+     * (orphanRemoval = true를 활용하여 기존 자식 엔티티를 삭제하고 새로 추가)
      */
-    public void updateInstructorInfo(Long id, String name, String currentTitle, String nickname) {
+    public void updateInstructor(Long id, InstructorDto.InstructorCreateRequest request) {
+        // 1. 기존 강사 조회
         Instructor instructor = instructorRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Instructor not found: " + id));
 
-        // @Transactional 안이므로, 엔티티를 수정하면 "Dirty Checking"에 의해 자동 UPDATE 쿼리 발생
-        instructor.setName(name);
-        instructor.setNickname(nickname);
-        instructor.setCurrentTitle(currentTitle);
-        // (save()를 호출할 필요 없음)
+        // 2. 기본 필드 덮어쓰기 (Dirty Checking)
+        instructor.setName(request.getName());
+        instructor.setNickname(request.getNickname());
+        instructor.setProfileImgUrl(request.getProfileImgUrl());
+        instructor.setSgeaLogoImgUrl(request.getSgeaLogoImgUrl());
+        instructor.setContent(request.getContent());
+
+        // 3. ⭐️ 연관관계(Collection) 필드 덮어쓰기 ⭐️
+        // (orphanRemoval=true 이므로, clear() 시 고아 객체가 되어 DELETE 쿼리 발생)
+        instructor.getCareerHistories().clear();
+        instructor.getGames().clear();
+
+        // 4. DTO의 새 데이터로 다시 채우기 (CascadeType.ALL로 INSERT 쿼리 발생)
+        request.getCareers().forEach(careerDto -> {
+            instructor.addCareerHistory(careerDto.toEntity());
+        });
+
+        request.getGameNames().forEach(gameName -> {
+            Game game = gameRepository.findByName(gameName)
+                    .orElseThrow(() -> new RuntimeException("Game not found:" + "Z" + gameName));
+                            InstructorGame instructorGame = new InstructorGame();
+            instructorGame.setGame(game);
+            instructor.addGame(instructorGame);
+        });
     }
 
     /**

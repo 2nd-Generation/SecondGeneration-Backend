@@ -54,15 +54,13 @@ public class InstructorController {
      * (U) 강사 정보 수정 (간단한 예시)
      */
     @Operation(summary = "강사 정보 수정", description = "강사 id 값으로 정보 수정")
-    @PatchMapping("/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Void> updateInstructorInfo(
             @PathVariable Long id,
-            @RequestParam String name,
-            @RequestParam String currentTitle,
-            @RequestParam String nickname
+            @RequestBody InstructorDto.InstructorCreateRequest request
     )
     {
-        instructorService.updateInstructorInfo(id, name, currentTitle, nickname);
+        instructorService.updateInstructor(id, request);
         return ResponseEntity.ok().build();
     }
 

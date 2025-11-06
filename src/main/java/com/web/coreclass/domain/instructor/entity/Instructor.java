@@ -5,16 +5,16 @@ import com.web.coreclass.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Getter
 @Setter
 @Entity
+@ToString(exclude = {"careerHistories", "games"})
 @Table(name = "instructor")
 public class Instructor extends BaseEntity {
     @Id
@@ -29,9 +29,6 @@ public class Instructor extends BaseEntity {
 
     @Column(name = "profile_img_url")
     private String profileImgUrl;
-
-    @Column(name = "current_title")
-    private String currentTitle; // "Head/Coach"
 
     @Column(name = "sgea_logo_img_url")
     private String sgeaLogoImgUrl;
