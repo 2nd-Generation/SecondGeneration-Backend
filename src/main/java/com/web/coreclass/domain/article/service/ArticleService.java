@@ -21,10 +21,14 @@ public class ArticleService {
     /**
      * (C) Create: 게시글 생성
      */
-    public Long createArticle(ArticleDto.ArticleCreateRequest request) {
+    public ArticleDto.ArticleDetailResponse createArticle(ArticleDto.ArticleCreateRequest request) {
         Article article = request.toEntity(); // DTO -> Entity 변환
         Article savedArticle = articleRepository.save(article);
-        return savedArticle.getId();
+
+        // 마크다운 변환 로직
+        String safeHtml = markdownService.markdownToSafeHtml(savedArticle.getContent());
+        // ✅ 생성된 엔티티와 변환된 HTML로 DTO를 만들어 반환
+        return new ArticleDto.ArticleDetailResponse(savedArticle, safeHtml);
     }
 
     /**

@@ -81,7 +81,8 @@ public class InstructorServiceTest {
 
         // --- When (실행) ---
         log.info("🚀 instructorService.createInstructor() 호출");
-        Long instructorId = instructorService.createInstructor(request);
+        InstructorDto.InstructorDetailResponse response = instructorService.createInstructor(request);
+        Long instructorId = response.getId();
         log.info("✅ 생성된 강사 ID: {}", instructorId);
 
         // --- Then (검증) ---
@@ -146,7 +147,8 @@ public class InstructorServiceTest {
         request.setCareers(List.of(career1));
         request.setGameNames(List.of("Valorant"));
 
-        Long instructorId = instructorService.createInstructor(request);
+        InstructorDto.InstructorDetailResponse response = instructorService.createInstructor(request);
+        Long instructorId = response.getId();
         log.info("✅ Given: 테스트용 강사 생성 완료 (ID: {})", instructorId);
 
         // 1차 캐시(영속성 컨텍스트) 비우기

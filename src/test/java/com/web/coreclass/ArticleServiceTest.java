@@ -54,7 +54,8 @@ public class ArticleServiceTest {
         log.info("➡️ 생성 요청 DTO: {}", request);
 
         // --- When (실행) ---
-        Long articleId = articleService.createArticle(request);
+        ArticleDto.ArticleDetailResponse response = articleService.createArticle(request);
+        Long articleId = response.getId();
         log.info("✅ 생성된 게시글 ID: {}", articleId);
 
         // --- Then (검증) ---
