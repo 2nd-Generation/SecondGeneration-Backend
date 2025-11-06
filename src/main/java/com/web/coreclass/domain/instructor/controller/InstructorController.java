@@ -58,9 +58,11 @@ public class InstructorController {
     public ResponseEntity<Void> updateInstructorInfo(
             @PathVariable Long id,
             @RequestParam String name,
-            @RequestParam String currentTitle)
+            @RequestParam String currentTitle,
+            @RequestParam String nickname
+    )
     {
-        instructorService.updateInstructorInfo(id, name, currentTitle);
+        instructorService.updateInstructorInfo(id, name, currentTitle, nickname);
         return ResponseEntity.ok().build();
     }
 

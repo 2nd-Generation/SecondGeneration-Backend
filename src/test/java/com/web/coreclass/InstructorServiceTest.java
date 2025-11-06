@@ -68,7 +68,8 @@ public class InstructorServiceTest {
 
         // 2. Main Request DTO 준비
         var request = new InstructorDto.InstructorCreateRequest();
-        request.setName("Rexi 서재원");
+        request.setName("서재원");
+        request.setNickname("Rexi");
         request.setCurrentTitle("Head/Coach");
         request.setSgeaLogoImgUrl("sgea_logo.png");
         request.setContent("메이저 리그 출신...");
@@ -102,7 +103,8 @@ public class InstructorServiceTest {
 
         // 3. AssertJ로 검증
         assertThat(findInstructor.getId()).isEqualTo(instructorId);
-        assertThat(findInstructor.getName()).isEqualTo("Rexi 서재원");
+        assertThat(findInstructor.getName()).isEqualTo("서재원");
+        assertThat(findInstructor.getNickname()).isEqualTo("Rexi");
         assertThat(findInstructor.getSgeaLogoImgUrl()).isEqualTo("sgea_logo.png");
         assertThat(findInstructor.getContent()).isEqualTo("메이저 리그 출신...");
 
@@ -138,7 +140,8 @@ public class InstructorServiceTest {
         career1.setRoleType(RoleType.PLAYER);
 
         var request1 = new InstructorDto.InstructorCreateRequest();
-        request1.setName("Rexi 서재원");
+        request1.setName("서재원");
+        request1.setNickname("Rexi");
         request1.setCurrentTitle("Head/Coach");
         request1.setSgeaLogoImgUrl("sgea_logo.png");
         request1.setContent("메이저 리그 출신...");
@@ -153,7 +156,8 @@ public class InstructorServiceTest {
         career2.setRoleType(RoleType.COACH);
 
         var request2 = new InstructorDto.InstructorCreateRequest();
-        request2.setName("Aka 김아카");
+        request2.setName("김아카");
+        request2.setNickname("Aka");
         request2.setCurrentTitle("Coach");
         request2.setSgeaLogoImgUrl("sgea_logo2.png");
         request2.setContent("LCK 출신...");
@@ -180,12 +184,14 @@ public class InstructorServiceTest {
         // (Set은 순서가 없으므로, 이름만 추출하여 검증)
         assertThat(instructorList)
                 .extracting("name") // ListResponse DTO의 'name' 필드
-                .containsExactlyInAnyOrder("Rexi 서재원", "Aka 김아카");
-
+                .containsExactlyInAnyOrder("서재원", "김아카");
+        assertThat(instructorList)
+                .extracting("nickname") // 닉네임 검증
+                .containsExactlyInAnyOrder("Rexi", "Aka");
         // 3. (중요) N+1 방지 검증: games 필드가 올바르게 Join 되었는지 확인
-        // "Aka 김아카" 강사를 찾아서, 게임 개수가 2개가 맞는지 확인
+        // "Aka" 강사를 찾아서, 게임 개수가 2개가 맞는지 확인
         InstructorDto.InstructorListResponse aka = instructorList.stream()
-                .filter(i -> i.getName().equals("Aka 김아카"))
+                .filter(i -> i.getNickname().equals("Aka")) // 닉네임으로 찾기
                 .findFirst()
                 .orElseThrow();
 
@@ -212,7 +218,8 @@ public class InstructorServiceTest {
         career1.setRoleType(RoleType.PLAYER);
 
         var request = new InstructorDto.InstructorCreateRequest();
-        request.setName("Rexi 서재원");
+        request.setName("서재원");
+        request.setNickname("Rexi");
         request.setCurrentTitle("Head/Coach");
         request.setSgeaLogoImgUrl("sgea_logo.png");
         request.setContent("메이저 리그 출신...");
@@ -239,7 +246,8 @@ public class InstructorServiceTest {
         log.info("👀 DTO 경력 수: {}", responseDto.getCareers().size());
         log.info("👀 DTO 게임 수: {}", responseDto.getGames().size());
         assertThat(responseDto.getId()).isEqualTo(instructorId);
-        assertThat(responseDto.getName()).isEqualTo("Rexi 서재원");
+        assertThat(responseDto.getName()).isEqualTo("서재원");
+        assertThat(responseDto.getNickname()).isEqualTo("Rexi");
         assertThat(responseDto.getSgeaLogoImgUrl()).isEqualTo("sgea_logo.png");
         assertThat(responseDto.getContent()).isEqualTo("메이저 리그 출신...");
 
