@@ -10,6 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -21,7 +24,7 @@ public class InstructorService {
     /**
      * (C) Create: 강사 생성
      */
-    public Long createInstructor(InstructorDto.InstructorCreateRequest request) {
+    public InstructorDto.InstructorDetailResponse createInstructor(InstructorDto.InstructorCreateRequest request) {
 
         // 1. Instructor 엔티티 생성
         Instructor instructor = new Instructor();
@@ -53,7 +56,22 @@ public class InstructorService {
         // 4. Instructor 저장 (Cascade 설정으로 하위 엔티티들 동시 저장)
         Instructor savedInstructor = instructorRepository.save(instructor);
 
-        return savedInstructor.getId();
+        return new InstructorDto.InstructorDetailResponse(savedInstructor);
+    }
+
+    /**
+     * (R) Read List: 강사 전체 목록 조회
+     */
+    @Transactional(readOnly = true)
+    public List<InstructorDto.InstructorListResponse> getInstructorList() {
+
+        // N+1 방지를 위해 만든 쿼리 사용
+        List<Instructor> instructors = instructorRepository.findAllWithGames();
+
+        // Entity List -> DTO List 변환
+        return instructors.stream()
+                .map(InstructorDto.InstructorListResponse::new)
+                .collect(Collectors.toList());
     }
 
     /**

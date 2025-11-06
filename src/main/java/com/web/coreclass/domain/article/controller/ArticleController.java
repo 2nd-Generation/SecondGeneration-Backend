@@ -13,29 +13,31 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/articles")
+@RequestMapping("/api/article")
 public class ArticleController {
 
     private final ArticleService articleService;
 
     /**
      * (C) Create: 게시글 생성
-     * [POST] /api/articles
+     * [POST] /api/article
      */
     @Operation(summary = "공지 생성", description = "공지 카테고리별로 생성")
     @PostMapping
-    public ResponseEntity<Void> createArticle(@RequestBody ArticleDto.ArticleCreateRequest request) {
-        Long articleId = articleService.createArticle(request);
+    public ResponseEntity<ArticleDto.ArticleDetailResponse> createArticle(@RequestBody ArticleDto.ArticleCreateRequest request) {
+        ArticleDto.ArticleDetailResponse createdArticle = articleService.createArticle(request);
+        Long articleId = createdArticle.getId();
 
-        // 생성된 리소스의 URI를 Location 헤더에 담아 201 Created 응답
-        URI location = URI.create("/api/articles/" + articleId);
-        return ResponseEntity.created(location).build();
+        URI location = URI.create("/api/article/" + articleId);
+
+        // 201 Created 응답 + Location 헤더 + 생성된 DTO 본문
+        return ResponseEntity.created(location).body(createdArticle);
     }
 
     /**
      * (R) Read List: 게시글 목록 조회 (카테고리별 필터링)
-     * [GET] /api/articles?category=NEWS
-     * [GET] /api/articles (카테고리 없으면 'ALL' 조회)
+     * [GET] /api/article?category=NEWS
+     * [GET] /api/article (카테고리 없으면 'ALL' 조회)
      */
     @GetMapping
     @Operation(summary = "공지 조회", description = "카테고리별로 공지 조회 카테고리가 없으면 모두 조회")
@@ -50,7 +52,7 @@ public class ArticleController {
 
     /**
      * (U) Update: 게시글 수정
-     * [PUT] /api/articles/{id}
+     * [PUT] /api/article/{id}
      */
     @PutMapping("/{id}")
     @Operation(summary = "공지 수정", description = "공지 Id 값으로 뉴스 수정")
@@ -64,7 +66,7 @@ public class ArticleController {
 
     /**
      * (D) Delete: 게시글 삭제
-     * [DELETE] /api/articles/{id}
+     * [DELETE] /api/article/{id}
      */
     @DeleteMapping("/{id}")
     @Operation(summary = "공지 삭제", description = "공지 Id 값으로삭제")

@@ -81,7 +81,8 @@ public class InstructorServiceTest {
 
         // --- When (실행) ---
         log.info("🚀 instructorService.createInstructor() 호출");
-        Long instructorId = instructorService.createInstructor(request);
+        InstructorDto.InstructorDetailResponse response = instructorService.createInstructor(request);
+        Long instructorId = response.getId();
         log.info("✅ 생성된 강사 ID: {}", instructorId);
 
         // --- Then (검증) ---
@@ -124,9 +125,81 @@ public class InstructorServiceTest {
 
         log.info("===== ✅ 강사 생성(C) 테스트 통과 =====");
     }
+    @Test
+    @DisplayName("강사 목록 조회(R-List): N+1 없이 모든 강사 목록 DTO를 반환한다.")
+    void getInstructorListTest() {
+        // --- Given (준비) ---
+        log.info("===== 🏁 강사 목록(R-List) 테스트 시작 =====");
+
+        // Given 1: 강사 1 ("Rexi") 생성 (Valorant)
+        var career1 = new InstructorDto.InstructorCreateRequest.CareerHistoryRequest();
+        career1.setPeriod("2018");
+        career1.setTeamName("SkyFoxes");
+        career1.setRoleType(RoleType.PLAYER);
+
+        var request1 = new InstructorDto.InstructorCreateRequest();
+        request1.setName("Rexi 서재원");
+        request1.setCurrentTitle("Head/Coach");
+        request1.setSgeaLogoImgUrl("sgea_logo.png");
+        request1.setContent("메이저 리그 출신...");
+        request1.setCareers(List.of(career1));
+        request1.setGameNames(List.of("Valorant"));
+        instructorService.createInstructor(request1); // (반환값 안씀)
+
+        // Given 2: 강사 2 ("Aka") 생성 (LoL, Valorant)
+        var career2 = new InstructorDto.InstructorCreateRequest.CareerHistoryRequest();
+        career2.setPeriod("2020");
+        career2.setTeamName("T1");
+        career2.setRoleType(RoleType.COACH);
+
+        var request2 = new InstructorDto.InstructorCreateRequest();
+        request2.setName("Aka 김아카");
+        request2.setCurrentTitle("Coach");
+        request2.setSgeaLogoImgUrl("sgea_logo2.png");
+        request2.setContent("LCK 출신...");
+        request2.setCareers(List.of(career2));
+        request2.setGameNames(List.of("League of Legends", "Valorant")); // 2개 게임
+        instructorService.createInstructor(request2); // (반환값 안씀)
+
+        // 💡 중요: 영속성 컨텍스트 초기화 (Fetch Join 쿼리 테스트를 위해)
+        em.flush();
+        em.clear();
+        log.info("🔄 영속성 컨텍스트 초기화. DB에서 다시 조회합니다...");
+
+        // --- When (실행) ---
+        log.info("🚀 instructorService.getInstructorList() 호출");
+        List<InstructorDto.InstructorListResponse> instructorList = instructorService.getInstructorList();
+
+        // --- Then (검증) ---
+        log.info("👀 조회된 DTO 목록: {}", instructorList);
+
+        // 1. 개수 검증
+        assertThat(instructorList).hasSize(2);
+
+        // 2. 내용 검증 (DTO에 @ToString이 있다면 로그로 확인 가능)
+        // (Set은 순서가 없으므로, 이름만 추출하여 검증)
+        assertThat(instructorList)
+                .extracting("name") // ListResponse DTO의 'name' 필드
+                .containsExactlyInAnyOrder("Rexi 서재원", "Aka 김아카");
+
+        // 3. (중요) N+1 방지 검증: games 필드가 올바르게 Join 되었는지 확인
+        // "Aka 김아카" 강사를 찾아서, 게임 개수가 2개가 맞는지 확인
+        InstructorDto.InstructorListResponse aka = instructorList.stream()
+                .filter(i -> i.getName().equals("Aka 김아카"))
+                .findFirst()
+                .orElseThrow();
+
+        log.info("👀 'Aka 김아카' 강사의 DTO 게임 목록: {}", aka.getGames());
+        assertThat(aka.getGames()).hasSize(2);
+        assertThat(aka.getGames())
+                .extracting("name") // GameResponse DTO의 'name' 필드
+                .containsExactlyInAnyOrder("League of Legends", "Valorant");
+
+        log.info("===== ✅ 강사 목록(R-List) 테스트 통과 =====");
+    }
 
     @Test
-    @DisplayName("강사 조회(R): Fetch Join을 통해 모든 연관 엔티티를 DTO로 변환한다.")
+    @DisplayName("강사 상세 조회(R): Fetch Join을 통해 모든 연관 엔티티를 DTO로 변환한다.")
     void getInstructorDetailsTest() {
         // --- Given (준비) ---
         log.info("===== 🏁 강사 조회(R) 테스트 시작 =====");
@@ -146,7 +219,8 @@ public class InstructorServiceTest {
         request.setCareers(List.of(career1));
         request.setGameNames(List.of("Valorant"));
 
-        Long instructorId = instructorService.createInstructor(request);
+        InstructorDto.InstructorDetailResponse response = instructorService.createInstructor(request);
+        Long instructorId = response.getId();
         log.info("✅ Given: 테스트용 강사 생성 완료 (ID: {})", instructorId);
 
         // 1차 캐시(영속성 컨텍스트) 비우기
@@ -185,7 +259,7 @@ public class InstructorServiceTest {
         assertThat(responseDto.getGames())
                 .extracting("name") // GameResponse DTO의 'name' 필드
                 .containsExactly("Valorant"); // 순서가 1개라 InAnyOrder 대신 Exactly 사용
-        log.info("===== ✅ 강사 조회(R) 테스트 통과 =====");
+        log.info("===== ✅ 강사 상세 조회(R) 테스트 통과 =====");
     }
 }
 
