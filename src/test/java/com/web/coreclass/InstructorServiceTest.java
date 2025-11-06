@@ -70,7 +70,6 @@ public class InstructorServiceTest {
         var request = new InstructorDto.InstructorCreateRequest();
         request.setName("서재원");
         request.setNickname("Rexi");
-        request.setCurrentTitle("Head/Coach");
         request.setSgeaLogoImgUrl("sgea_logo.png");
         request.setContent("메이저 리그 출신...");
         request.setCareers(List.of(career1, career2));
@@ -142,7 +141,6 @@ public class InstructorServiceTest {
         var request1 = new InstructorDto.InstructorCreateRequest();
         request1.setName("서재원");
         request1.setNickname("Rexi");
-        request1.setCurrentTitle("Head/Coach");
         request1.setSgeaLogoImgUrl("sgea_logo.png");
         request1.setContent("메이저 리그 출신...");
         request1.setCareers(List.of(career1));
@@ -158,7 +156,6 @@ public class InstructorServiceTest {
         var request2 = new InstructorDto.InstructorCreateRequest();
         request2.setName("김아카");
         request2.setNickname("Aka");
-        request2.setCurrentTitle("Coach");
         request2.setSgeaLogoImgUrl("sgea_logo2.png");
         request2.setContent("LCK 출신...");
         request2.setCareers(List.of(career2));
@@ -220,7 +217,6 @@ public class InstructorServiceTest {
         var request = new InstructorDto.InstructorCreateRequest();
         request.setName("서재원");
         request.setNickname("Rexi");
-        request.setCurrentTitle("Head/Coach");
         request.setSgeaLogoImgUrl("sgea_logo.png");
         request.setContent("메이저 리그 출신...");
         request.setCareers(List.of(career1));

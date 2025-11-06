@@ -30,9 +30,6 @@ public class Instructor extends BaseEntity {
     @Column(name = "profile_img_url")
     private String profileImgUrl;
 
-    @Column(name = "current_title")
-    private String currentTitle; // "Head/Coach"
-
     @Column(name = "sgea_logo_img_url")
     private String sgeaLogoImgUrl;
 

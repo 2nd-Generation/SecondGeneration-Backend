@@ -31,7 +31,6 @@ public class InstructorService {
         instructor.setName(request.getName());
         instructor.setNickname(request.getNickname());
         instructor.setProfileImgUrl(request.getProfileImgUrl());
-        instructor.setCurrentTitle(request.getCurrentTitle());
         instructor.setSgeaLogoImgUrl(request.getSgeaLogoImgUrl());
         instructor.setContent(request.getContent());
 
@@ -92,14 +91,13 @@ public class InstructorService {
     /**
      * (U) Update: 강사 정보 수정 (예시: 기본 정보만 수정)
      */
-    public void updateInstructorInfo(Long id, String name, String currentTitle, String nickname) {
+    public void updateInstructorInfo(Long id, String name, String nickname) {
         Instructor instructor = instructorRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Instructor not found: " + id));
 
         // @Transactional 안이므로, 엔티티를 수정하면 "Dirty Checking"에 의해 자동 UPDATE 쿼리 발생
         instructor.setName(name);
         instructor.setNickname(nickname);
-        instructor.setCurrentTitle(currentTitle);
         // (save()를 호출할 필요 없음)
     }
 
