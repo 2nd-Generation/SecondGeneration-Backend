@@ -4,6 +4,7 @@ import com.web.coreclass.domain.careerHistory.entity.CareerHistory;
 import com.web.coreclass.domain.careerHistory.entity.RoleType;
 import com.web.coreclass.domain.game.entity.Game;
 import com.web.coreclass.domain.instructor.entity.Instructor;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -21,22 +22,42 @@ public class InstructorDto {
     @Getter
     @Setter // Body -> DTO 변환을 위해 필요
     @ToString
-    public static class CreateRequest {
+    public static class InstructorCreateRequest {
+        @Schema(description = "강사 이름", example = "김찬희")
         private String name;
+
+        @Schema(description = "강사 프로필 이미지 Url", example = "null")
         private String profileImgUrl;
+
+        @Schema(description = "현재 역할(미사용 필드)", example = "미사용 필드 (추후 확장 가능성)")
         private String currentTitle;
+
+        @Schema(description = "SGEA 로고 이미지 Url", example = "null")
         private String sgeaLogoImgUrl;
+
+        @Schema(description = "강사 소개글", example = "메이저 리그 출신 ...")
         private String content;
+
+        @Schema(description = "강사 커리어")
         private List<CareerHistoryRequest> careers;
+
+        @Schema(description = "게임 이름", example = "Overwatch2, Valorant")
         private List<String> gameNames; // e.g., ["Valorant", "League of Legends"]
 
         @Getter
         @Setter
         @ToString
         public static class CareerHistoryRequest {
+            @Schema(description = "활동 연도", example = "2018-2020")
             private String period;
+
+            @Schema(description = "팀 이름", example = "New York Excelsior")
             private String teamName;
+
+            @Schema(description = "역할", example = "Head Coach")
             private RoleType roleType;
+
+            @Schema(description = "팀 로고 이미지 Url", example = "null")
             private String logoImgUrl;
 
             // DTO -> Entity 변환 메서드
@@ -56,7 +77,7 @@ public class InstructorDto {
      */
     @Getter
     @ToString
-    public static class DetailResponse {
+    public static class InstructorDetailResponse {
         private Long id;
         private String name;
         private String profileImgUrl;
@@ -102,7 +123,7 @@ public class InstructorDto {
         }
 
         // Entity -> DTO 변환 생성자
-        public DetailResponse(Instructor instructor) {
+        public InstructorDetailResponse(Instructor instructor) {
             this.id = instructor.getId();
             this.name = instructor.getName();
             this.profileImgUrl = instructor.getProfileImgUrl();

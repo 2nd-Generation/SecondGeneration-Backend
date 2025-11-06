@@ -21,7 +21,7 @@ public class InstructorService {
     /**
      * (C) Create: 강사 생성
      */
-    public Long createInstructor(InstructorDto.CreateRequest request) {
+    public Long createInstructor(InstructorDto.InstructorCreateRequest request) {
 
         // 1. Instructor 엔티티 생성
         Instructor instructor = new Instructor();
@@ -60,14 +60,14 @@ public class InstructorService {
      * (R) Read: 강사 상세 조회
      */
     @Transactional(readOnly = true) // 조회 전용 트랜잭션 (성능 최적화)
-    public InstructorDto.DetailResponse getInstructorDetails(Long id) {
+    public InstructorDto.InstructorDetailResponse getInstructorDetails(Long id) {
 
         // N+1 방지를 위해 Fetch Join 쿼리 사용
         Instructor instructor = instructorRepository.findInstructorDetailsById(id)
                 .orElseThrow(() -> new RuntimeException("Instructor not found: " + id));
 
         // Entity -> DTO 변환 후 반환
-        return new InstructorDto.DetailResponse(instructor);
+        return new InstructorDto.InstructorDetailResponse(instructor);
     }
 
     /**

@@ -3,6 +3,7 @@ package com.web.coreclass.domain.article.controller;
 import com.web.coreclass.domain.article.dto.ArticleDto;
 import com.web.coreclass.domain.article.entity.ArticleCategory;
 import com.web.coreclass.domain.article.service.ArticleService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/article")
+@RequestMapping("/api/articles")
 public class ArticleController {
 
     private final ArticleService articleService;
@@ -21,8 +22,9 @@ public class ArticleController {
      * (C) Create: 게시글 생성
      * [POST] /api/articles
      */
+    @Operation(summary = "공지 생성", description = "공지 카테고리별로 생성")
     @PostMapping
-    public ResponseEntity<Void> createArticle(@RequestBody ArticleDto.CreateRequest request) {
+    public ResponseEntity<Void> createArticle(@RequestBody ArticleDto.ArticleCreateRequest request) {
         Long articleId = articleService.createArticle(request);
 
         // 생성된 리소스의 URI를 Location 헤더에 담아 201 Created 응답
@@ -36,12 +38,13 @@ public class ArticleController {
      * [GET] /api/articles (카테고리 없으면 'ALL' 조회)
      */
     @GetMapping
-    public ResponseEntity<List<ArticleDto.ListResponse>> getArticleList(
+    @Operation(summary = "공지 조회", description = "카테고리별로 공지 조회 카테고리가 없으면 모두 조회")
+    public ResponseEntity<List<ArticleDto.ArticleListResponse>> getArticleList(
             // 💡 required = false: 파라미터가 없으면 null이 전달됨
             @RequestParam(required = false) ArticleCategory category
     ) {
         // (Service에서 null을 'ALL'로 처리)
-        List<ArticleDto.ListResponse> list = articleService.getArticleList(category);
+        List<ArticleDto.ArticleListResponse> list = articleService.getArticleList(category);
         return ResponseEntity.ok(list);
     }
 
@@ -50,9 +53,10 @@ public class ArticleController {
      * [PUT] /api/articles/{id}
      */
     @PutMapping("/{id}")
+    @Operation(summary = "공지 수정", description = "공지 Id 값으로 뉴스 수정")
     public ResponseEntity<Void> updateArticle(
             @PathVariable Long id,
-            @RequestBody ArticleDto.CreateRequest request
+            @RequestBody ArticleDto.ArticleCreateRequest request
     ) {
         articleService.updateArticle(id, request);
         return ResponseEntity.ok().build(); // 200 OK
@@ -63,6 +67,7 @@ public class ArticleController {
      * [DELETE] /api/articles/{id}
      */
     @DeleteMapping("/{id}")
+    @Operation(summary = "공지 삭제", description = "공지 Id 값으로삭제")
     public ResponseEntity<Void> deleteArticle(@PathVariable Long id) {
         articleService.deleteArticle(id);
         return ResponseEntity.noContent().build(); // 204 No Content
