@@ -4,6 +4,7 @@ import com.web.coreclass.domain.careerHistory.entity.CareerHistory;
 import com.web.coreclass.domain.careerHistory.entity.RoleType;
 import com.web.coreclass.domain.game.entity.Game;
 import com.web.coreclass.domain.instructor.entity.Instructor;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -22,12 +23,25 @@ public class InstructorDto {
     @Setter // Body -> DTO 변환을 위해 필요
     @ToString
     public static class CreateRequest {
+        @Schema(description = "강사 이름", example = "김찬희")
         private String name;
+
+        @Schema(description = "강사 프로필 이미지 Url", example = "null")
         private String profileImgUrl;
+
+        @Schema(description = "이벤트 종료일 (무기한 : null)", example = "2025-12-06")
         private String currentTitle;
+
+        @Schema(description = "SGEA 로고 이미지 Url", example = "null")
         private String sgeaLogoImgUrl;
+
+        @Schema(description = "강사 소개글", example = "메이저 리그 출신 ...")
         private String content;
+
+        @Schema(description = "강사 커리어")
         private List<CareerHistoryRequest> careers;
+
+        @Schema(description = "게임 이름", example = "Overwatch2, Valorant")
         private List<String> gameNames; // e.g., ["Valorant", "League of Legends"]
 
         @Getter
