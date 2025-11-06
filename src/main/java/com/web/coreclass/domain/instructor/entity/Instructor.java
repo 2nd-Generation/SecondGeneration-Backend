@@ -22,7 +22,10 @@ public class Instructor extends BaseEntity {
     private Long id;
 
     @Column(nullable = false)
-    private String name; // "Rexi 서재원"
+    private String name; // "서재원"
+
+    @Column(nullable = false)
+    private String nickname; // "Rexi"
 
     @Column(name = "profile_img_url")
     private String profileImgUrl;

@@ -26,6 +26,9 @@ public class InstructorDto {
         @Schema(description = "강사 이름", example = "김찬희")
         private String name;
 
+        @Schema(description = "강사 게임 닉네임", example = "Mandu")
+        private String nickname;
+
         @Schema(description = "강사 프로필 이미지 Url", example = "null")
         private String profileImgUrl;
 
@@ -80,6 +83,7 @@ public class InstructorDto {
     public static class InstructorDetailResponse {
         private Long id;
         private String name;
+        private String nickname;
         private String profileImgUrl;
         private String currentTitle;
         private String sgeaLogoImgUrl;
@@ -126,6 +130,7 @@ public class InstructorDto {
         public InstructorDetailResponse(Instructor instructor) {
             this.id = instructor.getId();
             this.name = instructor.getName();
+            this.nickname = instructor.getNickname();
             this.profileImgUrl = instructor.getProfileImgUrl();
             this.currentTitle = instructor.getCurrentTitle();
             this.sgeaLogoImgUrl = instructor.getSgeaLogoImgUrl();
@@ -151,6 +156,7 @@ public class InstructorDto {
     public static class InstructorListResponse {
         private Long id;
         private String name;
+        private String nickname;
         private String profileImgUrl;
         private String currentTitle;
         private String sgeaLogoImgUrl;
@@ -161,6 +167,7 @@ public class InstructorDto {
         public InstructorListResponse(Instructor instructor) {
             this.id = instructor.getId();
             this.name = instructor.getName();
+            this.nickname = instructor.getNickname();
             this.profileImgUrl = instructor.getProfileImgUrl();
             this.currentTitle = instructor.getCurrentTitle();
             this.sgeaLogoImgUrl = instructor.getSgeaLogoImgUrl();
