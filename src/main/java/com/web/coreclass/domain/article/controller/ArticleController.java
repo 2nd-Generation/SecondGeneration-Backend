@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/article")
+@RequestMapping("/api/articles")
 public class ArticleController {
 
     private final ArticleService articleService;
@@ -24,7 +24,7 @@ public class ArticleController {
      */
     @Operation(summary = "공지 생성", description = "공지 카테고리별로 생성")
     @PostMapping
-    public ResponseEntity<Void> createArticle(@RequestBody ArticleDto.CreateRequest request) {
+    public ResponseEntity<Void> createArticle(@RequestBody ArticleDto.ArticleCreateRequest request) {
         Long articleId = articleService.createArticle(request);
 
         // 생성된 리소스의 URI를 Location 헤더에 담아 201 Created 응답
@@ -56,7 +56,7 @@ public class ArticleController {
     @Operation(summary = "공지 수정", description = "공지 Id 값으로 뉴스 수정")
     public ResponseEntity<Void> updateArticle(
             @PathVariable Long id,
-            @RequestBody ArticleDto.CreateRequest request
+            @RequestBody ArticleDto.ArticleCreateRequest request
     ) {
         articleService.updateArticle(id, request);
         return ResponseEntity.ok().build(); // 200 OK

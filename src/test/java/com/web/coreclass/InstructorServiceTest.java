@@ -55,19 +55,19 @@ public class InstructorServiceTest {
         // --- Given (준비) ---
         log.info("===== 🏁 강사 생성(C) 테스트 시작 =====");
         // 1. Career DTO 준비
-        var career1 = new InstructorDto.CreateRequest.CareerHistoryRequest();
+        var career1 = new InstructorDto.InstructorCreateRequest.CareerHistoryRequest();
         career1.setPeriod("2018");
         career1.setTeamName("SkyFoxes");
         career1.setRoleType(RoleType.PLAYER);
 
-        var career2 = new InstructorDto.CreateRequest.CareerHistoryRequest();
+        var career2 = new InstructorDto.InstructorCreateRequest.CareerHistoryRequest();
         career2.setPeriod("2019");
         career2.setTeamName("Eternity Gaming");
         career2.setRoleType(RoleType.HEAD_COACH);
 
 
         // 2. Main Request DTO 준비
-        var request = new InstructorDto.CreateRequest();
+        var request = new InstructorDto.InstructorCreateRequest();
         request.setName("Rexi 서재원");
         request.setCurrentTitle("Head/Coach");
         request.setSgeaLogoImgUrl("sgea_logo.png");
@@ -133,12 +133,12 @@ public class InstructorServiceTest {
         // createInstructorTest와 동일한 로직으로 강사 1명 미리 생성
         // (실제로는 이 부분을 공통 메서드로 뽑아내는 것이 좋습니다)
         log.info("➡️ Given: 테스트용 강사 1명 생성 중...");
-        var career1 = new InstructorDto.CreateRequest.CareerHistoryRequest();
+        var career1 = new InstructorDto.InstructorCreateRequest.CareerHistoryRequest();
         career1.setPeriod("2018");
         career1.setTeamName("SkyFoxes");
         career1.setRoleType(RoleType.PLAYER);
 
-        var request = new InstructorDto.CreateRequest();
+        var request = new InstructorDto.InstructorCreateRequest();
         request.setName("Rexi 서재원");
         request.setCurrentTitle("Head/Coach");
         request.setSgeaLogoImgUrl("sgea_logo.png");

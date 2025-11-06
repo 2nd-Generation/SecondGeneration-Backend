@@ -21,7 +21,7 @@ public class InstructorService {
     /**
      * (C) Create: 강사 생성
      */
-    public Long createInstructor(InstructorDto.CreateRequest request) {
+    public Long createInstructor(InstructorDto.InstructorCreateRequest request) {
 
         // 1. Instructor 엔티티 생성
         Instructor instructor = new Instructor();

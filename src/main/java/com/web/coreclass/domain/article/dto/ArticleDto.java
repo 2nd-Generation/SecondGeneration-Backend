@@ -17,7 +17,7 @@ public class ArticleDto {
     @Getter
     @Setter // @RequestBody 매핑을 위해
     @ToString
-    public static class CreateRequest {
+    public static class ArticleCreateRequest {
         @Schema(description = "공지사항 카테고리", example = "EVENT")
         private ArticleCategory category;
 

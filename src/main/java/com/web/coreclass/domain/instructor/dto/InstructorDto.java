@@ -22,14 +22,14 @@ public class InstructorDto {
     @Getter
     @Setter // Body -> DTO 변환을 위해 필요
     @ToString
-    public static class CreateRequest {
+    public static class InstructorCreateRequest {
         @Schema(description = "강사 이름", example = "김찬희")
         private String name;
 
         @Schema(description = "강사 프로필 이미지 Url", example = "null")
         private String profileImgUrl;
 
-        @Schema(description = "이벤트 종료일 (무기한 : null)", example = "2025-12-06")
+        @Schema(description = "현재 역할(미사용 필드)", example = "미사용 필드 (추후 확장 가능성)")
         private String currentTitle;
 
         @Schema(description = "SGEA 로고 이미지 Url", example = "null")
@@ -48,9 +48,16 @@ public class InstructorDto {
         @Setter
         @ToString
         public static class CareerHistoryRequest {
+            @Schema(description = "활동 연도", example = "2018-2020")
             private String period;
+
+            @Schema(description = "팀 이름", example = "New York Excelsior")
             private String teamName;
+
+            @Schema(description = "역할", example = "Head Coach")
             private RoleType roleType;
+
+            @Schema(description = "팀 로고 이미지 Url", example = "null")
             private String logoImgUrl;
 
             // DTO -> Entity 변환 메서드

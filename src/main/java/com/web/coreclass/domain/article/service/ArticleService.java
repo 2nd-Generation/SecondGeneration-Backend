@@ -21,7 +21,7 @@ public class ArticleService {
     /**
      * (C) Create: 게시글 생성
      */
-    public Long createArticle(ArticleDto.CreateRequest request) {
+    public Long createArticle(ArticleDto.ArticleCreateRequest request) {
         Article article = request.toEntity(); // DTO -> Entity 변환
         Article savedArticle = articleRepository.save(article);
         return savedArticle.getId();
@@ -68,7 +68,7 @@ public class ArticleService {
      * (U) Update: 게시글 수정
      * (CreateRequest DTO를 재활용, 또는 별도 UpdateRequest DTO 생성)
      */
-    public void updateArticle(Long id, ArticleDto.CreateRequest request) {
+    public void updateArticle(Long id, ArticleDto.ArticleCreateRequest request) {
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다. id=" + id));
 

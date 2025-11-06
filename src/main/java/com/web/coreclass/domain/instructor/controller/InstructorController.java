@@ -11,7 +11,7 @@ import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/instructor")
+@RequestMapping("/api/instructors")
 public class InstructorController {
     private final InstructorService instructorService;
 
@@ -20,7 +20,7 @@ public class InstructorController {
      */
     @Operation(summary = "강사 생성", description = "강사 생성")
     @PostMapping
-    public ResponseEntity<Void> createInstructor(@RequestBody InstructorDto.CreateRequest request) {
+    public ResponseEntity<Void> createInstructor(@RequestBody InstructorDto.InstructorCreateRequest request) {
         Long instructorId = instructorService.createInstructor(request);
         // 생성된 리소스의 URI를 반환 (RESTful)
         return ResponseEntity.created(URI.create("/api/instructors/" + instructorId)).build();

@@ -42,7 +42,7 @@ public class ArticleServiceTest {
         String rawMarkdown = "# SGEA 아카데미\n* 신규 수강생 30% 할인";
         LocalDate today = LocalDate.now();
 
-        var request = new ArticleDto.CreateRequest();
+        var request = new ArticleDto.ArticleCreateRequest();
         request.setCategory(ArticleCategory.EVENT);
         request.setTitle("테스트 이벤트");
         request.setSubTitle("테스트 서브 타이틀");
@@ -161,7 +161,7 @@ public class ArticleServiceTest {
 
 
         // 수정용 DTO 준비
-        var updateRequest = new ArticleDto.CreateRequest();
+        var updateRequest = new ArticleDto.ArticleCreateRequest();
         updateRequest.setTitle("수정 완료");
         updateRequest.setCategory(ArticleCategory.TEST_UPDATE);
         updateRequest.setContent("수정된 본문");
