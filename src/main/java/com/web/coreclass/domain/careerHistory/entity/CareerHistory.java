@@ -5,10 +5,12 @@ import com.web.coreclass.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 
 @Getter
 @Setter
+@ToString(exclude = "instructor")
 @Entity
 @Table(name = "career_history")
 public class CareerHistory extends BaseEntity {

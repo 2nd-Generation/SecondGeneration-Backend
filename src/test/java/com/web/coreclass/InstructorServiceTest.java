@@ -265,6 +265,85 @@ public class InstructorServiceTest {
                 .containsExactly("Valorant"); // 순서가 1개라 InAnyOrder 대신 Exactly 사용
         log.info("===== ✅ 강사 상세 조회(R) 테스트 통과 =====");
     }
+
+    @Test
+    @DisplayName("강사 수정(U): 강사 정보 및 연관관계(경력, 게임)를 덮어쓴다.")
+    void updateInstructorTest() {
+        // --- Given (준비) ---
+        log.info("===== 🏁 강사 수정(U) 테스트 시작 =====");
+
+        // Given 1: "Rexi" 강사 생성 (경력 1개, 게임 1개)
+        var originalCareer = new InstructorDto.InstructorCreateRequest.CareerHistoryRequest();
+        originalCareer.setPeriod("2018");
+        originalCareer.setTeamName("Original Team"); // ⬅️ "Original Team"
+        originalCareer.setRoleType(RoleType.PLAYER);
+
+        var createRequest = new InstructorDto.InstructorCreateRequest();
+        createRequest.setName("서재원");
+        createRequest.setNickname("Rexi");
+        createRequest.setContent("수정 전 본문");
+        createRequest.setCareers(List.of(originalCareer));
+        createRequest.setGameNames(List.of("Valorant")); // ⬅️ "Valorant"
+
+        InstructorDto.InstructorDetailResponse created = instructorService.createInstructor(createRequest);
+        Long instructorId = created.getId();
+
+        em.flush();
+        em.clear();
+
+        // Given 2: "수정용" DTO 준비 (경력 2개, 게임 1개)
+        var updatedCareer1 = new InstructorDto.InstructorCreateRequest.CareerHistoryRequest();
+        updatedCareer1.setPeriod("2020");
+        updatedCareer1.setTeamName("Updated Team 1"); // ⬅️ "Updated Team 1"
+        updatedCareer1.setRoleType(RoleType.COACH);
+
+        var updatedCareer2 = new InstructorDto.InstructorCreateRequest.CareerHistoryRequest();
+        updatedCareer2.setPeriod("2022");
+        updatedCareer2.setTeamName("Updated Team 2"); // ⬅️ "Updated Team 2"
+        updatedCareer2.setRoleType(RoleType.HEAD_COACH);
+
+        var updateRequest = new InstructorDto.InstructorCreateRequest();
+        updateRequest.setName("서재원(수정)"); // ⬅️ 이름 수정
+        updateRequest.setNickname("Rexi-Updated"); // ⬅️ 닉네임 수정
+        updateRequest.setContent("수정 완료 본문");
+        updateRequest.setCareers(List.of(updatedCareer1, updatedCareer2)); // ⬅️ 경력 2개로 변경
+        updateRequest.setGameNames(List.of("League of Legends")); // ⬅️ 게임 변경
+
+        // --- When (실행) ---
+        log.info("🚀 instructorService.updateInstructor({}) 호출", instructorId);
+        instructorService.updateInstructor(instructorId, updateRequest);
+
+        // --- Then (검증) ---
+        em.flush();
+        em.clear();
+
+        Instructor updatedInstructor = instructorRepository.findInstructorDetailsById(instructorId)
+                .orElseThrow(() -> new AssertionError("수정된 강사를 찾을 수 없습니다."));
+
+        log.info("👀 수정된 강사 조회: {}", updatedInstructor.getName());
+        log.info("👀 수정된 강사 경력: {}", updatedInstructor.getCareerHistories());
+        log.info("👀 수정된 강사 게임: {}", updatedInstructor.getGames());
+
+        // 1. 기본 필드 검증
+        assertThat(updatedInstructor.getName()).isEqualTo("서재원(수정)");
+        assertThat(updatedInstructor.getNickname()).isEqualTo("Rexi-Updated");
+
+        // 2. ⭐️ 경력(Collection) 덮어쓰기 검증 ⭐️
+        assertThat(updatedInstructor.getCareerHistories()).hasSize(2);
+        assertThat(updatedInstructor.getCareerHistories())
+                .extracting("teamName")
+                .containsExactlyInAnyOrder("Updated Team 1", "Updated Team 2");
+        // ➡️ "Original Team"이 삭제되었는지 검증
+
+        // 3. ⭐️ 게임(Collection) 덮어쓰기 검증 ⭐️
+        assertThat(updatedInstructor.getGames()).hasSize(1);
+        assertThat(updatedInstructor.getGames())
+                .extracting(ig -> ig.getGame().getName())
+                .containsExactly("League of Legends");
+        // ➡️ "Valorant"가 삭제되었는지 검증
+
+        log.info("===== ✅ 강사 수정(U) 테스트 통과 =====");
+    }
 }
 
 
