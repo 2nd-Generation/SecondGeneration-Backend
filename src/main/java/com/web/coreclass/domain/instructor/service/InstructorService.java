@@ -10,6 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -54,6 +57,21 @@ public class InstructorService {
         Instructor savedInstructor = instructorRepository.save(instructor);
 
         return new InstructorDto.InstructorDetailResponse(savedInstructor);
+    }
+
+    /**
+     * (R) Read List: 강사 전체 목록 조회
+     */
+    @Transactional(readOnly = true)
+    public List<InstructorDto.InstructorListResponse> getInstructorList() {
+
+        // N+1 방지를 위해 만든 쿼리 사용
+        List<Instructor> instructors = instructorRepository.findAllWithGames();
+
+        // Entity List -> DTO List 변환
+        return instructors.stream()
+                .map(InstructorDto.InstructorListResponse::new)
+                .collect(Collectors.toList());
     }
 
     /**

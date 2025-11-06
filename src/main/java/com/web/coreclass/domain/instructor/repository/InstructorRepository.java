@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface InstructorRepository extends JpaRepository<Instructor, Long> {
@@ -16,4 +17,10 @@ public interface InstructorRepository extends JpaRepository<Instructor, Long> {
             "LEFT JOIN FETCH ig.game " +
             "WHERE i.id = :id")
     Optional<Instructor> findInstructorDetailsById(@Param("id") Long id);
+
+    // 록 조회용 N+1 방지 쿼리 (games만 Join)
+    @Query("SELECT i FROM Instructor i " +
+            "LEFT JOIN FETCH i.games ig " +
+            "LEFT JOIN FETCH ig.game")
+    List<Instructor> findAllWithGames();
 }

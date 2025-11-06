@@ -142,4 +142,33 @@ public class InstructorDto {
                     .collect(Collectors.toSet());
         }
     }
+    /**
+     * (R) List Response: 강사 목록 조회를 위한 DTO
+     * (상세 DTO에서 content, careers 등 무거운 필드 제외)
+     */
+    @Getter
+    @ToString
+    public static class InstructorListResponse {
+        private Long id;
+        private String name;
+        private String profileImgUrl;
+        private String currentTitle;
+        private String sgeaLogoImgUrl;
+        // ✅ 게임 목록은 포함 (게임 로고 이미지)
+        private Set<InstructorDetailResponse.GameResponse> games;
+
+        // Entity -> DTO 변환 생성자
+        public InstructorListResponse(Instructor instructor) {
+            this.id = instructor.getId();
+            this.name = instructor.getName();
+            this.profileImgUrl = instructor.getProfileImgUrl();
+            this.currentTitle = instructor.getCurrentTitle();
+            this.sgeaLogoImgUrl = instructor.getSgeaLogoImgUrl();
+
+            // ✅ N+1 문제를 피하려면, Service에서 Fetch Join이 필요함
+            this.games = instructor.getGames().stream()
+                    .map(instructorGame -> new InstructorDetailResponse.GameResponse(instructorGame.getGame()))
+                    .collect(Collectors.toSet());
+        }
+    }
 }

@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,6 +28,16 @@ public class InstructorController {
         URI location = URI.create("/api/instructor/" + instructorId);
         // 201 Created 응답 + Location 헤더 + 생성된 DTO 본문
         return ResponseEntity.created(location).body(createdInstructor);
+    }
+
+    /**
+     * (R) 강사 전체 목록 조회
+     */
+    @Operation(summary = "강사 전체 목록 조회", description = "모든 강사 목록을 조회합니다.")
+    @GetMapping
+    public ResponseEntity<List<InstructorDto.InstructorListResponse>> getInstructorList() {
+        List<InstructorDto.InstructorListResponse> list = instructorService.getInstructorList();
+        return ResponseEntity.ok(list);
     }
 
     /**
