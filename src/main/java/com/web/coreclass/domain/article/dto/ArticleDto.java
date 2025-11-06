@@ -63,7 +63,7 @@ public class ArticleDto {
      */
     @Getter
     @ToString
-    public static class ListResponse {
+    public static class ArticleListResponse {
         private Long id;
         private ArticleCategory category;
         private String title;
@@ -72,7 +72,7 @@ public class ArticleDto {
         private LocalDate postedAt;
 
         // Entity -> DTO 변환 생성자
-        public ListResponse(Article article) {
+        public ArticleListResponse(Article article) {
             this.id = article.getId();
             this.category = article.getCategory();
             this.title = article.getTitle();
@@ -88,7 +88,7 @@ public class ArticleDto {
      */
     @Getter
     @ToString
-    public static class DetailResponse {
+    public static class ArticleDetailResponse {
         private Long id;
         private ArticleCategory category;
         private String title;
@@ -101,7 +101,7 @@ public class ArticleDto {
 
         // Entity -> DTO 변환 생성자
         // (Service에서 변환된 HTML을 주입받습니다)
-        public DetailResponse(Article article, String safeHtmlContent) {
+        public ArticleDetailResponse(Article article, String safeHtmlContent) {
             this.id = article.getId();
             this.category = article.getCategory();
             this.title = article.getTitle();

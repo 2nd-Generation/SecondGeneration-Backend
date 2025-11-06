@@ -39,12 +39,12 @@ public class ArticleController {
      */
     @GetMapping
     @Operation(summary = "공지 조회", description = "카테고리별로 공지 조회 카테고리가 없으면 모두 조회")
-    public ResponseEntity<List<ArticleDto.ListResponse>> getArticleList(
+    public ResponseEntity<List<ArticleDto.ArticleListResponse>> getArticleList(
             // 💡 required = false: 파라미터가 없으면 null이 전달됨
             @RequestParam(required = false) ArticleCategory category
     ) {
         // (Service에서 null을 'ALL'로 처리)
-        List<ArticleDto.ListResponse> list = articleService.getArticleList(category);
+        List<ArticleDto.ArticleListResponse> list = articleService.getArticleList(category);
         return ResponseEntity.ok(list);
     }
 

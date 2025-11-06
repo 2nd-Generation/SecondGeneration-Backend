@@ -32,7 +32,7 @@ public class ArticleService {
      * (ALL 카테고리 처리는 Controller에서 category=null로 호출)
      */
     @Transactional(readOnly = true) // 조회 전용 (성능 최적화)
-    public List<ArticleDto.ListResponse> getArticleList(ArticleCategory category) {
+    public List<ArticleDto.ArticleListResponse> getArticleList(ArticleCategory category) {
 
         List<Article> articles;
 
@@ -44,7 +44,7 @@ public class ArticleService {
 
         // Entity List -> DTO List 변환
         return articles.stream()
-                .map(ArticleDto.ListResponse::new) // ListResponse DTO로 변환
+                .map(ArticleDto.ArticleListResponse::new) // ListResponse DTO로 변환
                 .collect(Collectors.toList());
     }
 
@@ -53,7 +53,7 @@ public class ArticleService {
      * (마크다운 -> HTML 변환 포함)
      */
     @Transactional(readOnly = true)
-    public ArticleDto.DetailResponse getArticleDetails(Long id) {
+    public ArticleDto.ArticleDetailResponse getArticleDetails(Long id) {
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다. id=" + id));
 
@@ -61,7 +61,7 @@ public class ArticleService {
         String safeHtml = markdownService.markdownToSafeHtml(article.getContent());
 
         // DTO 생성자에 엔티티와 변환된 HTML을 함께 전달
-        return new ArticleDto.DetailResponse(article, safeHtml);
+        return new ArticleDto.ArticleDetailResponse(article, safeHtml);
     }
 
     /**

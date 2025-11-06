@@ -77,7 +77,7 @@ public class InstructorDto {
      */
     @Getter
     @ToString
-    public static class DetailResponse {
+    public static class InstructorDetailResponse {
         private Long id;
         private String name;
         private String profileImgUrl;
@@ -123,7 +123,7 @@ public class InstructorDto {
         }
 
         // Entity -> DTO 변환 생성자
-        public DetailResponse(Instructor instructor) {
+        public InstructorDetailResponse(Instructor instructor) {
             this.id = instructor.getId();
             this.name = instructor.getName();
             this.profileImgUrl = instructor.getProfileImgUrl();

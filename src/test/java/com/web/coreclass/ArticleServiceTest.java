@@ -91,7 +91,7 @@ public class ArticleServiceTest {
 
         // --- When 1: 'ALL' 조회 (null) ---
         log.info("➡️ 1. 'ALL' 카테고리 조회 (postedAt 최신순)");
-        List<ArticleDto.ListResponse> allList = articleService.getArticleList(null);
+        List<ArticleDto.ArticleListResponse> allList = articleService.getArticleList(null);
 
         // --- Then 1: 'ALL' 검증 ---
         log.info("✅ [Test Log] 'ALL' 조회 DTO 목록: {}", allList);
@@ -103,7 +103,7 @@ public class ArticleServiceTest {
 
         // --- When 2: 'NEWS' 조회 ---
         log.info("➡️ 2. 'NEWS' 카테고리 조회");
-        List<ArticleDto.ListResponse> newsList = articleService.getArticleList(ArticleCategory.NEWS);
+        List<ArticleDto.ArticleListResponse> newsList = articleService.getArticleList(ArticleCategory.NEWS);
 
         // --- Then 2: 'NEWS' 검증 ---
         log.info("✅ [Test Log] 'NEWS' 조회 DTO 목록: {}", newsList);
@@ -133,7 +133,7 @@ public class ArticleServiceTest {
 
         // --- When (실행) ---
         log.info("➡️ articleService.getArticleDetails({}) 호출", articleId);
-        ArticleDto.DetailResponse responseDto = articleService.getArticleDetails(articleId);
+        ArticleDto.ArticleDetailResponse responseDto = articleService.getArticleDetails(articleId);
 
         // --- Then (검증) ---
         log.info("👀 조회된 DTO: {}", responseDto);

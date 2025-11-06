@@ -31,8 +31,8 @@ public class InstructorController {
      */
     @Operation(summary = "강사 상세조회", description = "강사 id 값으로 상세조회")
     @GetMapping("/{id}")
-    public ResponseEntity<InstructorDto.DetailResponse> getInstructorDetails(@PathVariable Long id) {
-        InstructorDto.DetailResponse response = instructorService.getInstructorDetails(id);
+    public ResponseEntity<InstructorDto.InstructorDetailResponse> getInstructorDetails(@PathVariable Long id) {
+        InstructorDto.InstructorDetailResponse response = instructorService.getInstructorDetails(id);
         return ResponseEntity.ok(response);
     }
 

@@ -157,7 +157,7 @@ public class InstructorServiceTest {
 
         // --- When (실행) ---
         log.info("🚀 instructorService.getInstructorDetails({}) 호출", instructorId);
-        InstructorDto.DetailResponse responseDto = instructorService.getInstructorDetails(instructorId);
+        InstructorDto.InstructorDetailResponse responseDto = instructorService.getInstructorDetails(instructorId);
 
         // --- Then (검증) ---
         log.info("👀 조회된 DTO: {}", responseDto); // (DetailResponse DTO에 @ToString 권장)
