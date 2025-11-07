@@ -1,6 +1,5 @@
 package com.web.coreclass.global.entity;
 
-
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
@@ -21,6 +20,4 @@ public abstract class BaseEntity {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
-
-    
 }
