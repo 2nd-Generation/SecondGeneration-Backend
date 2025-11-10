@@ -1,0 +1,107 @@
+# 워크플로우 이름
+name: Deploy Spring Boot to EC2 with Docker
+
+# 1. 워크플로우 실행 조건:
+# 'main' 브랜치에 'push' 이벤트가 발생했을 때 이 워크플로우를 실행합니다.
+# (만약 브랜치 이름이 main이 아니라 master라면 'master'로 수정하세요)
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-deploy:
+    # 2. 실행 환경:
+    # 이 작업은 최신 Ubuntu Linux 서버에서 실행됩니다.
+    runs-on: ubuntu-latest
+    
+    steps:
+      # 3. 코드 체크아웃:
+      # GitHub 리포지토리의 최신 코드를 작업 머신으로 가져옵니다.
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 4. Java 21 설치:
+      # 프로젝트 빌드를 위해 Java 21을 설치합니다.
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      # 5. Gradle 캐시 설정:
+      # 의존성을 캐시하여 빌드 속도를 높입니다.
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        
+      # 6. gradlew 실행 권한 부여:
+      # gradlew 파일에 실행 권한을 줍니다. (Git에서 권한이 누락될 경우 대비)
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      # 7. AWS 자격 증명 설정:
+      # GitHub Secrets에 저장된 AWS 키를 사용하여 인증합니다.
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }} # (예: ap-northeast-2)
+
+      # 8. AWS ECR 로그인:
+      # Docker가 ECR에 접근할 수 있도록 인증합니다.
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # 9. Docker 이미지 빌드, 태그, 푸시:
+      # (우리가 로컬에서 수동으로 했던 3단계를 여기서 자동으로 합니다)
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          # login-ecr 단계에서 출력된 ECR 주소
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }} 
+          # Secrets에 저장된 ECR 리포지토리 이름
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }} 
+          # 이미지 태그를 커밋 해시(고유 ID)로 지정
+          IMAGE_TAG: ${{ github.sha }} 
+        run: |
+          # Dockerfile을 사용하여 이미지 빌드
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          # ECR로 이미지 푸시
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+      
+      # 10. EC2에 배포 (SSH 원격 실행):
+      # (우리가 EC2에 접속해서 수동으로 했던 4단계를 여기서 자동으로 합니다)
+      - name: Deploy to EC2 instance
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}             # (EC2 퍼블릭 IP)
+          username: ${{ secrets.EC2_USER }}           # (ec2-user)
+          key: ${{ secrets.EC2_SSH_KEY }}          # (EC2 접속용 .pem 키 내용)
+          port: 22                                  # (SSH 포트)
+          
+          # EC2 인스턴스 내에서 실행될 스크립트:
+          script: |
+            # (1) EC2가 ECR에 인증 (EC2에 연결된 IAM Role이 이 작업을 수행)
+            aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
+            
+            # (2) 방금 푸시한 새 이미지 PULL (태그: 커밋 해시)
+            export ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}
+            export ECR_REPOSITORY=${{ secrets.ECR_REPOSITORY }}
+            export IMAGE_TAG=${{ github.sha }}
+            docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+            
+            # (3) 기존 컨테이너 중지 및 삭제 (있을 경우에만)
+            docker stop coreclass-app || true
+            docker rm coreclass-app || true
+            
+            # (4) 새 컨테이너 실행 (DB 환경변수 주입)
+            # application.properties의 'sgea' DB 이름을 사용
+            docker run -d \
+              -p 8080:8080 \
+              --name coreclass-app \
+              -e "SPRING_DATASOURCE_URL=jdbc:mysql://${{ secrets.DB_HOST }}:3306/sgea" \
+              -e "SPRING_DATASOURCE_USERNAME=${{ secrets.DB_USERNAME }}" \
+              -e "SPRING_DATASOURCE_PASSWORD=${{ secrets.DB_PASSWORD }}" \
+              --restart always \
+              $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
