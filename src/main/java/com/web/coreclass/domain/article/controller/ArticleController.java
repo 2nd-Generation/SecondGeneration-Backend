@@ -51,6 +51,17 @@ public class ArticleController {
     }
 
     /**
+     * (R) Read Popup List: 팝업 게시글 목록 조회
+     * [GET] /api/article/popups
+     */
+    @GetMapping("/popups")
+    @Operation(summary = "팝업 공지 조회", description = "팝업으로 설정된 공지 목록만 우선순위로 정렬하여 조회합니다.")
+    public ResponseEntity<List<ArticleDto.ArticleListResponse>> getPopupArticleList() {
+        List<ArticleDto.ArticleListResponse> list = articleService.getPopupArticleList();
+        return ResponseEntity.ok(list);
+    }
+
+    /**
      * (U) Update: 게시글 수정
      * [PUT] /api/article/{id}
      */

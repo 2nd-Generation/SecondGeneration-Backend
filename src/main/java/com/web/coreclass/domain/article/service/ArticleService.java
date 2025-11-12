@@ -69,6 +69,20 @@ public class ArticleService {
     }
 
     /**
+     * (R) Read Popup List: 팝업 게시글 목록만 조회
+     */
+    @Transactional(readOnly = true)
+    public List<ArticleDto.ArticleListResponse> getPopupArticleList() {
+        // 1. Repository에 정의된 팝업 전용 쿼리 호출
+        List<Article> popups = articleRepository.findAllByIsPopupTrueOrderByPriorityAscPostedAtDesc();
+
+        // 2. Entity List -> DTO List 변환
+        return popups.stream()
+                .map(ArticleDto.ArticleListResponse::new)
+                .collect(Collectors.toList());
+    }
+
+    /**
      * (U) Update: 게시글 수정
      * (CreateRequest DTO를 재활용, 또는 별도 UpdateRequest DTO 생성)
      */
@@ -85,6 +99,8 @@ public class ArticleService {
         article.setPostedAt(request.getPostedAt());
         article.setStartDate(request.getStartDate());
         article.setEndDate(request.getEndDate());
+        article.setPopup(request.isPopup());
+        article.setPriority(request.getPriority() != null ? request.getPriority() : 99);
 
         // @Transactional 종료 시 자동 UPDATE
     }
