@@ -17,6 +17,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -29,6 +34,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                // ⬇️ CORS 설정 적용
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 // ⬇️ CSRF, HTTP Basic 비활성화
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
@@ -96,5 +103,27 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    // ⬇️ CORS 설정 Bean (프론트엔드 주소 반영)
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+
+        // ⬇️ 전달받은 주소로 수정
+        config.setAllowedOrigins(List.of(
+                "https://www.sgea.kr",  // 1. 운영(배포) 도메인
+                "https://sgea.kr",      // 2. (www 없는) 운영 도메인
+                "http://localhost:5173" // 3. 프론트엔드 로컬 개발 환경
+        ));
+
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true); // ⬅️ 인증 헤더 허용
+        config.setMaxAge(3600L);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config); // 모든 경로에 대해 위 설정 적용
+        return source;
     }
 }
