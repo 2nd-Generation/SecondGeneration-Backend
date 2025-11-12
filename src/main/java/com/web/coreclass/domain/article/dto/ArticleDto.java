@@ -42,6 +42,12 @@ public class ArticleDto {
         @Schema(description = "이벤트 종료일 (무기한 : null)", example = "2025-12-06")
         private LocalDate endDate;   // (무기한 : Nullable)
 
+        @Schema(description = "팝업 여부", example = "true")
+        private boolean isPopup;
+
+        @Schema(description = "팝업 우선순위 (낮을수록 높음)", example = "1")
+        private Integer priority;
+
         // DTO -> Entity 변환 메서드
         public Article toEntity() {
             Article article = new Article();
@@ -53,6 +59,8 @@ public class ArticleDto {
             article.setPostedAt(this.postedAt);
             article.setStartDate(this.startDate);
             article.setEndDate(this.endDate);
+            article.setPopup(this.isPopup);
+            article.setPriority(this.priority != null ? this.priority : 99); // null 방지
             return article;
         }
     }
@@ -70,6 +78,8 @@ public class ArticleDto {
         private String subTitle;
         private String thumbnailUrl;
         private LocalDate postedAt;
+        private boolean isPopup;
+        private Integer priority;
 
         // Entity -> DTO 변환 생성자
         public ArticleListResponse(Article article) {
@@ -79,6 +89,8 @@ public class ArticleDto {
             this.subTitle = article.getSubTitle();
             this.thumbnailUrl = article.getThumbnailUrl();
             this.postedAt = article.getPostedAt();
+            this.isPopup = article.isPopup();
+            this.priority = article.getPriority();
         }
     }
 
@@ -98,6 +110,8 @@ public class ArticleDto {
         private LocalDate startDate;
         private LocalDate endDate;
         private String safeHtmlContent; // 마크다운 원본(X) -> 변환된 HTML(O)
+        private boolean isPopup;
+        private Integer priority;
 
         // Entity -> DTO 변환 생성자
         // (Service에서 변환된 HTML을 주입받습니다)
@@ -111,6 +125,8 @@ public class ArticleDto {
             this.startDate = article.getStartDate();
             this.endDate = article.getEndDate();
             this.safeHtmlContent = safeHtmlContent; // 변환된 HTML 저장
+            this.isPopup = article.isPopup();
+            this.priority = article.getPriority();
         }
     }
 }

@@ -13,4 +13,7 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 
     // 2. 특정 카테고리의 게시글을 최신순(postedAt)으로 조회
     List<Article> findAllByCategoryOrderByPostedAtDesc(ArticleCategory category);
+
+    // 3. 팝업으로 지정된 게시글만 (1)우선순위 (2)최신순으로 조회 (필요시 사용)
+    List<Article> findAllByIsPopupTrueOrderByPriorityAscPostedAtDesc();
 }

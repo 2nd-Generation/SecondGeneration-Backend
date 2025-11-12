@@ -50,6 +50,8 @@ public class ArticleServiceTest {
         request.setPostedAt(today);
         request.setStartDate(today);
         request.setEndDate(today.plusDays(7));
+        request.setPopup(true);
+        request.setPriority(1);
 
         log.info("➡️ 생성 요청 DTO: {}", request);
 
@@ -65,7 +67,8 @@ public class ArticleServiceTest {
         // 1. DB에서 직접 조회
         Article findArticle = articleRepository.findById(articleId)
                 .orElseThrow(() -> new AssertionError("게시글이 DB에 저장되지 않았습니다."));
-
+        assertThat(findArticle.isPopup()).isTrue();
+        assertThat(findArticle.getPriority()).isEqualTo(1);
         log.info("👀 DB 조회된 content(원본): {}", findArticle.getContent());
 
         // 2. 검증
@@ -76,6 +79,44 @@ public class ArticleServiceTest {
         assertThat(findArticle.getContent()).isEqualTo(rawMarkdown);
 
         log.info("===== ✅ 게시글 생성(C) 테스트 통과 =====");
+    }
+
+    @Test
+    @DisplayName("팝업 목록 조회(R-Popup): 팝업(true) 게시글만 우선순위로 정렬하여 조회한다.")
+    void getPopupArticleListTest() {
+        // --- Given (준비) ---
+        log.info("===== 🏁 팝업 목록(R-Popup) 테스트 시작 =====");
+        LocalDate today = LocalDate.now();
+
+        // (1) 팝업O, 순위2, 오늘
+        articleRepository.save(createTestArticle(ArticleCategory.EVENT, "팝업 이벤트 1 (순위 2)", today, true, 2));
+        // (2) 팝업O, 순위1, 어제
+        articleRepository.save(createTestArticle(ArticleCategory.NEWS, "팝업 뉴스 1 (순위 1)", today.minusDays(1), true, 1));
+        // (3) 팝업X, 순위1, 내일
+        articleRepository.save(createTestArticle(ArticleCategory.RECRUIT, "일반 공지 1 (순위 1)", today.plusDays(1), false, 1));
+
+        em.flush();
+        em.clear();
+
+        // --- When (실행) ---
+        log.info("➡️ articleService.getPopupArticleList() 호출");
+        List<ArticleDto.ArticleListResponse> popupList = articleService.getPopupArticleList();
+
+        // --- Then (검증) ---
+        log.info("✅ [Test Log] 팝업 조회 DTO 목록: {}", popupList);
+
+        // 1. 팝업(true)인 게시글 2개만 조회되었는지 확인
+        assertThat(popupList).hasSize(2);
+
+        // 2. priority 순서(1 -> 2)로 정렬되었는지 확인 (날짜 무관)
+        assertThat(popupList.get(0).getTitle()).isEqualTo("팝업 뉴스 1 (순위 1)");
+        assertThat(popupList.get(1).getTitle()).isEqualTo("팝업 이벤트 1 (순위 2)");
+
+        // 3. (3)번 팝업(false) 게시글은 포함되지 않았는지 확인
+        assertThat(popupList).extracting("title")
+                .doesNotContain("일반 공지 1 (순위 1)");
+
+        log.info("===== ✅ 팝업 목록(R-Popup) 테스트 통과 =====");
     }
 
     @Test
@@ -155,7 +196,7 @@ public class ArticleServiceTest {
     void updateArticleTest() {
         // --- Given (준비) ---
         log.info("===== 🏁 게시글 수정(U) 테스트 시작 =====");
-        Article article = articleRepository.save(createTestArticle(ArticleCategory.NEWS, "수정 전", LocalDate.now()));
+        Article article = articleRepository.save(createTestArticle(ArticleCategory.NEWS, "수정 전", LocalDate.now(), false, 99));
         Long articleId = article.getId();
         em.flush();
         em.clear();
@@ -168,6 +209,8 @@ public class ArticleServiceTest {
         updateRequest.setContent("수정된 본문");
         updateRequest.setPostedAt(LocalDate.now().plusDays(1)); // (다른 필드도 세팅)
         updateRequest.setSubTitle("수정된 서브타이틀");
+        updateRequest.setPopup(true);
+        updateRequest.setPriority(5);
 
         // --- When (실행) ---
         log.info("➡️ articleService.updateArticle({}) 호출", articleId);
@@ -177,11 +220,12 @@ public class ArticleServiceTest {
         em.flush();
         em.clear();
         Article updatedArticle = articleRepository.findById(articleId).get();
-
         log.info("✅ [Test Log] ID {}번 수정됨. DB 최종 조회 결과: {}", articleId, updatedArticle);
         assertThat(updatedArticle.getTitle()).isEqualTo("수정 완료");
         assertThat(updatedArticle.getCategory()).isEqualTo(ArticleCategory.TEST_UPDATE);
         assertThat(updatedArticle.getContent()).isEqualTo("수정된 본문");
+        assertThat(updatedArticle.isPopup()).isTrue();
+        assertThat(updatedArticle.getPriority()).isEqualTo(5);
         log.info("===== ✅ 게시글 수정(U) 테스트 통과 =====");
     }
 
@@ -206,15 +250,20 @@ public class ArticleServiceTest {
         log.info("===== ✅ 게시글 삭제(D) 테스트 통과 =====");
     }
 
+    private Article createTestArticle(ArticleCategory category, String title, LocalDate postedAt) {
+        return createTestArticle(category, title, postedAt, false, 99); // 기본값 호출
+    }
 
     // 테스트용 Article 엔티티를 쉽게 만들기 위한 Helper 메서드
-    private Article createTestArticle(ArticleCategory category, String title, LocalDate postedAt) {
+    private Article createTestArticle(ArticleCategory category, String title, LocalDate postedAt, boolean isPopup, Integer priority) {
         Article article = new Article();
         article.setCategory(category);
         article.setTitle(title);
         article.setSubTitle("서브 타이틀");
         article.setContent("기본 본문");
         article.setPostedAt(postedAt);
+        article.setPopup(isPopup);
+        article.setPriority(priority);
         return article;
     }
 

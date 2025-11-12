@@ -2,6 +2,7 @@ package com.web.coreclass.domain.article.entity;
 
 import com.web.coreclass.global.entity.BaseEntity;
 import jakarta.persistence.*;
+import org.hibernate.annotations.ColumnDefault;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -32,6 +33,14 @@ public class Article extends BaseEntity {
     @Lob
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content; // 이벤트 자세히 보기
+
+    @Column(nullable = false)
+    @ColumnDefault("false")
+    private boolean isPopup;
+
+    @Column(nullable = false)
+    @ColumnDefault("99")
+    private Integer priority; // 팝업 순서 숫자가 낮을수록 우선순위 높음
 
     @Column(name = "thumbnail_url")
     private String thumbnailUrl;
