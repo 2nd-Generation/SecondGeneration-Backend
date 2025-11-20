@@ -84,6 +84,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/instructor/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/instructor/**").hasRole("ADMIN")
 
+                        // --- 이미지 업로드 API는 ADMIN 권한 필요 ---
+                        .requestMatchers(HttpMethod.POST, "/api/image/upload").hasRole("ADMIN")
                         // --- 그 외 모든 요청 ---
                         .anyRequest().authenticated()
                 )
