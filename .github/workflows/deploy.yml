@@ -103,5 +103,9 @@ jobs:
               -e "SPRING_DATASOURCE_URL=jdbc:mysql://${{ secrets.DB_HOST }}:3306/sgea" \
               -e "SPRING_DATASOURCE_USERNAME=${{ secrets.DB_USERNAME }}" \
               -e "SPRING_DATASOURCE_PASSWORD=${{ secrets.DB_PASSWORD }}" \
+              -e "AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET }}" \
+              -e "AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}" \
+              -e "AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}" \
+              -e "JWT_SECRET=${{ secrets.JWT_SECRET }}" \
               --restart always \
               $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
