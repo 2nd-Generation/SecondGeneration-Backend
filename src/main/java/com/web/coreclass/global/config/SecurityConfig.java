@@ -62,7 +62,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         // --- Swagger UI 접근 허용 ---
                         .requestMatchers(
-                                "/Swagger-ui.html",
+                                "/swagger-ui.html",
                                 "/swagger-ui/**",
                                 "/api-docs/json/**",
                                 "/v3/api-docs/**"
