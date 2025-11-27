@@ -42,7 +42,7 @@ public class Article extends BaseEntity {
     @ColumnDefault("99")
     private Integer priority; // 팝업 순서 숫자가 낮을수록 우선순위 높음
 
-    @Column(name = "thumbnail_url")
+    @Column(name = "thumbnail_url", length = 1000)
     private String thumbnailUrl;
 
     @Column(name = "posted_at")

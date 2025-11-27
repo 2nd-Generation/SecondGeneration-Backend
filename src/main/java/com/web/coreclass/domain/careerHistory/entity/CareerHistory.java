@@ -33,6 +33,6 @@ public class CareerHistory extends BaseEntity {
     @Column(name = "role_type")
     private RoleType roleType; // "Head Coach"
 
-    @Column(name = "logo_img_url")
+    @Column(name = "logo_img_url", length = 1000)
     private String logoImgUrl;
 }
