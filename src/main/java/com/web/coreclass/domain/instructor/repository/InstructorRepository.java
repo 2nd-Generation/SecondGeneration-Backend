@@ -14,13 +14,11 @@ public interface InstructorRepository extends JpaRepository<Instructor, Long> {
     @Query("SELECT i FROM Instructor i " +
             "LEFT JOIN FETCH i.careerHistories " +
             "LEFT JOIN FETCH i.games ig " +
-            "LEFT JOIN FETCH ig.game " +
             "WHERE i.id = :id")
     Optional<Instructor> findInstructorDetailsById(@Param("id") Long id);
 
     // 록 조회용 N+1 방지 쿼리 (games만 Join)
     @Query("SELECT i FROM Instructor i " +
-            "LEFT JOIN FETCH i.games ig " +
-            "LEFT JOIN FETCH ig.game")
+            "LEFT JOIN FETCH i.games ig")
     List<Instructor> findAllWithGames();
 }

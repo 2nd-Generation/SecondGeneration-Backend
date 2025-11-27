@@ -1,6 +1,6 @@
 package com.web.coreclass.domain.instructor.entity;
 
-import com.web.coreclass.domain.game.entity.Game;
+import com.web.coreclass.domain.game.entity.GameType;
 import com.web.coreclass.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -23,7 +23,7 @@ public class InstructorGame extends BaseEntity {
     private Instructor instructor;
 
     // InstructorGame(N) : Game(1)
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "game_id", nullable = false)
-    private Game game;
+    @Enumerated(EnumType.STRING) // DB에 "VALORANT" 문자열로 저장됨
+    @Column(name = "game_type", nullable = false)
+    private GameType gameType;
 }

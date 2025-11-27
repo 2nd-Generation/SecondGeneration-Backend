@@ -1,8 +1,6 @@
 package com.web.coreclass;
 
 import com.web.coreclass.domain.careerHistory.entity.RoleType;
-import com.web.coreclass.domain.game.entity.Game;
-import com.web.coreclass.domain.game.repository.GameRepository;
 import com.web.coreclass.domain.instructor.dto.InstructorDto;
 import com.web.coreclass.domain.instructor.entity.Instructor;
 import com.web.coreclass.domain.instructor.repository.InstructorRepository;
@@ -30,24 +28,7 @@ public class InstructorServiceTest {
     private InstructorRepository instructorRepository;
 
     @Autowired
-    private GameRepository gameRepository;
-
-    @Autowired
     private EntityManager em; // 영속성 컨텍스트 관리 (캐시 비우기용)
-
-    // (Given) 각 테스트 실행 전에 게임 데이터를 미리 세팅
-    @BeforeEach
-    void setup() {
-        // 1. "Valorant" 생성
-        Game valorant = new Game();
-        valorant.setName("Valorant");
-        gameRepository.save(valorant);
-
-        // 2. "League of Legends" 생성
-        Game lol = new Game();
-        lol.setName("League of Legends");
-        gameRepository.save(lol);
-    }
 
     @Test
     @DisplayName("강사 생성(C): 경력 및 게임 정보를 포함하여 성공적으로 생성된다.")
@@ -73,7 +54,7 @@ public class InstructorServiceTest {
         request.setSgeaLogoImgUrl("sgea_logo.png");
         request.setContent("메이저 리그 출신...");
         request.setCareers(List.of(career1, career2));
-        request.setGameNames(List.of("Valorant", "League of Legends")); // setup에서 저장한 게임 이름
+        request.setGameNames(List.of("Valorant", "Overwatch 2")); // setup에서 저장한 게임 이름
 
         // sout 대신 log.info() 사용
         // 중괄호 {}를 사용하면 파라미터가 효율적으로 전달됩니다.
@@ -121,8 +102,8 @@ public class InstructorServiceTest {
         assertThat(findInstructor.getGames()).hasSize(2);
         // Set에서 InstructorGame을 꺼내고, 다시 Game을 꺼내서 Name을 추출
         assertThat(findInstructor.getGames())
-                .extracting(instructorGame -> instructorGame.getGame().getName())
-                .containsExactlyInAnyOrder("Valorant", "League of Legends");
+                .extracting(ig -> ig.getGameType().getName())
+                .containsExactlyInAnyOrder("Valorant", "Overwatch 2");
 
         log.info("===== ✅ 강사 생성(C) 테스트 통과 =====");
     }
@@ -159,7 +140,7 @@ public class InstructorServiceTest {
         request2.setSgeaLogoImgUrl("sgea_logo2.png");
         request2.setContent("LCK 출신...");
         request2.setCareers(List.of(career2));
-        request2.setGameNames(List.of("League of Legends", "Valorant")); // 2개 게임
+        request2.setGameNames(List.of("Overwatch 2", "Valorant")); // 2개 게임
         instructorService.createInstructor(request2); // (반환값 안씀)
 
         // 💡 중요: 영속성 컨텍스트 초기화 (Fetch Join 쿼리 테스트를 위해)
@@ -196,7 +177,7 @@ public class InstructorServiceTest {
         assertThat(aka.getGames()).hasSize(2);
         assertThat(aka.getGames())
                 .extracting("name") // GameResponse DTO의 'name' 필드
-                .containsExactlyInAnyOrder("League of Legends", "Valorant");
+                .containsExactlyInAnyOrder("Overwatch 2", "Valorant");
 
         log.info("===== ✅ 강사 목록(R-List) 테스트 통과 =====");
     }
@@ -307,7 +288,7 @@ public class InstructorServiceTest {
         updateRequest.setNickname("Rexi-Updated"); // ⬅️ 닉네임 수정
         updateRequest.setContent("수정 완료 본문");
         updateRequest.setCareers(List.of(updatedCareer1, updatedCareer2)); // ⬅️ 경력 2개로 변경
-        updateRequest.setGameNames(List.of("League of Legends")); // ⬅️ 게임 변경
+        updateRequest.setGameNames(List.of("Overwatch 2")); // ⬅️ 게임 변경
 
         // --- When (실행) ---
         log.info("🚀 instructorService.updateInstructor({}) 호출", instructorId);
@@ -338,8 +319,8 @@ public class InstructorServiceTest {
         // 3. ⭐️ 게임(Collection) 덮어쓰기 검증 ⭐️
         assertThat(updatedInstructor.getGames()).hasSize(1);
         assertThat(updatedInstructor.getGames())
-                .extracting(ig -> ig.getGame().getName())
-                .containsExactly("League of Legends");
+                .extracting(ig -> ig.getGameType().getName())
+                .containsExactly("Overwatch 2");
         // ➡️ "Valorant"가 삭제되었는지 검증
 
         log.info("===== ✅ 강사 수정(U) 테스트 통과 =====");

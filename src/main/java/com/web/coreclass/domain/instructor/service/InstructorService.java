@@ -1,7 +1,6 @@
 package com.web.coreclass.domain.instructor.service;
 
-import com.web.coreclass.domain.game.entity.Game;
-import com.web.coreclass.domain.game.repository.GameRepository;
+import com.web.coreclass.domain.game.entity.GameType;
 import com.web.coreclass.domain.instructor.dto.InstructorDto;
 import com.web.coreclass.domain.instructor.entity.Instructor;
 import com.web.coreclass.domain.instructor.entity.InstructorGame;
@@ -19,7 +18,6 @@ import java.util.stream.Collectors;
 public class InstructorService {
 
     private final InstructorRepository instructorRepository;
-    private final GameRepository gameRepository;
 
     /**
      * (C) Create: 강사 생성
@@ -41,15 +39,12 @@ public class InstructorService {
 
         // 3. Game 엔티티 조회 및 InstructorGame 매핑 (Cascade)
         request.getGameNames().forEach(gameName -> {
-            // DB에서 게임 이름으로 Game 엔티티 조회
-            Game game = gameRepository.findByName(gameName)
-                    .orElseThrow(() -> new RuntimeException("Game not found: " + gameName));
+            // 💡 DB 조회가 아니라 Enum에서 바로 변환 (에러 걱정 없음)
+            GameType gameType = GameType.fromName(gameName);
 
-            // InstructorGame 매핑 엔티티 생성
             InstructorGame instructorGame = new InstructorGame();
-            instructorGame.setGame(game);
+            instructorGame.setGameType(gameType); // 💡 setGame -> setGameType
 
-            // 연관관계 편의 메서드 사용
             instructor.addGame(instructorGame);
         });
 
@@ -115,10 +110,12 @@ public class InstructorService {
         });
 
         request.getGameNames().forEach(gameName -> {
-            Game game = gameRepository.findByName(gameName)
-                    .orElseThrow(() -> new RuntimeException("Game not found:" + "Z" + gameName));
-                            InstructorGame instructorGame = new InstructorGame();
-            instructorGame.setGame(game);
+            // 💡 DB 조회가 아니라 Enum에서 바로 변환 (에러 걱정 없음)
+            GameType gameType = GameType.fromName(gameName);
+
+            InstructorGame instructorGame = new InstructorGame();
+            instructorGame.setGameType(gameType); // 💡 setGame -> setGameType
+
             instructor.addGame(instructorGame);
         });
     }

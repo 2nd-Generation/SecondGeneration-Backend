@@ -2,7 +2,7 @@ package com.web.coreclass.domain.instructor.dto;
 
 import com.web.coreclass.domain.careerHistory.entity.CareerHistory;
 import com.web.coreclass.domain.careerHistory.entity.RoleType;
-import com.web.coreclass.domain.game.entity.Game;
+import com.web.coreclass.domain.game.entity.GameType;
 import com.web.coreclass.domain.instructor.entity.Instructor;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
@@ -107,18 +107,15 @@ public class InstructorDto {
             }
         }
 
-        // 게임 상세 DTO (Nested)
-        @Getter
-        @ToString
+        // GameResponse
         public static class GameResponse {
-            private Long id;
             private String name;
             private String gameLogoUrl;
 
-            public GameResponse(Game game) {
-                this.id = game.getId();
-                this.name = game.getName();
-                this.gameLogoUrl = game.getGameLogoUrl();
+            // 생성자 파라미터 변경: Game -> GameType (또는 InstructorGame)
+            public GameResponse(GameType gameType) {
+                this.name = gameType.getName();       // Enum의 한글/영문 이름
+                this.gameLogoUrl = gameType.getLogoUrl(); // Enum에 정의된 로고 URL
             }
         }
 
@@ -137,8 +134,9 @@ public class InstructorDto {
                     .map(CareerHistoryResponse::new)
                     .collect(Collectors.toSet());
 
+            // InstructorDetailResponse 생성자 내부 수정
             this.games = instructor.getGames().stream()
-                    .map(instructorGame -> new GameResponse(instructorGame.getGame()))
+                    .map(instructorGame -> new GameResponse(instructorGame.getGameType())) // 💡 수정
                     .collect(Collectors.toSet());
         }
     }
@@ -165,9 +163,8 @@ public class InstructorDto {
             this.profileImgUrl = instructor.getProfileImgUrl();
             this.sgeaLogoImgUrl = instructor.getSgeaLogoImgUrl();
 
-            // ✅ N+1 문제를 피하려면, Service에서 Fetch Join이 필요함
             this.games = instructor.getGames().stream()
-                    .map(instructorGame -> new InstructorDetailResponse.GameResponse(instructorGame.getGame()))
+                    .map(instructorGame -> new InstructorDetailResponse.GameResponse(instructorGame.getGameType())) // 💡 수정
                     .collect(Collectors.toSet());
         }
     }
