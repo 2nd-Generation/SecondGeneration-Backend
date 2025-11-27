@@ -27,10 +27,10 @@ public class Instructor extends BaseEntity {
     @Column(nullable = false)
     private String nickname; // "Rexi"
 
-    @Column(name = "profile_img_url")
+    @Column(name = "profile_img_url", length = 1000)
     private String profileImgUrl;
 
-    @Column(name = "sgea_logo_img_url")
+    @Column(name = "sgea_logo_img_url", length = 1000)
     private String sgeaLogoImgUrl;
 
     @Column(name = "content")
