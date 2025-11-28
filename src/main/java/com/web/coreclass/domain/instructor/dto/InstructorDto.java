@@ -108,6 +108,7 @@ public class InstructorDto {
         }
 
         // GameResponse
+        @Getter
         public static class GameResponse {
             private String name;
             private String gameLogoUrl;
