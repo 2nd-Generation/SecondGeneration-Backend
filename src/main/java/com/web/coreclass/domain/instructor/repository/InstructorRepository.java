@@ -21,4 +21,15 @@ public interface InstructorRepository extends JpaRepository<Instructor, Long> {
     @Query("SELECT i FROM Instructor i " +
             "LEFT JOIN FETCH i.games ig")
     List<Instructor> findAllWithGames();
+
+    // [추가] 모든 강사의 프로필 이미지와 로고 URL만 조회
+    @Query("SELECT i.profileImgUrl FROM Instructor i WHERE i.profileImgUrl IS NOT NULL")
+    List<String> findAllProfileImgUrls();
+
+    @Query("SELECT i.sgeaLogoImgUrl FROM Instructor i WHERE i.sgeaLogoImgUrl IS NOT NULL")
+    List<String> findAllSgeaLogoImgUrls();
+
+    // (CareerHistory에 있는 로고들도 가져와야 함)
+    @Query("SELECT c.logoImgUrl FROM CareerHistory c WHERE c.logoImgUrl IS NOT NULL")
+    List<String> findAllCareerLogoImgUrls();
 }
