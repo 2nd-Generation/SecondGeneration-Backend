@@ -4,6 +4,7 @@ import com.web.coreclass.domain.article.dto.ArticleDto;
 import com.web.coreclass.domain.article.entity.Article;
 import com.web.coreclass.domain.article.entity.ArticleCategory;
 import com.web.coreclass.domain.article.repository.ArticleRepository;
+import com.web.coreclass.global.s3.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 public class ArticleService {
     private final ArticleRepository articleRepository;
     private final MarkdownService markdownService; // ⬅️ 마크다운 변환기 주입
+    private final S3Uploader s3Uploader;
 
     /**
      * (C) Create: 게시글 생성
@@ -109,6 +111,14 @@ public class ArticleService {
      * (D) Delete: 게시글 삭제
      */
     public void deleteArticle(Long id) {
+        // 1. 조회
+        Article article = articleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다. id=" + id));
+
+        // 2. 썸네일 이미지 삭제
+        s3Uploader.deleteFile(article.getThumbnailUrl());
+
+        // 3. DB 삭제
         articleRepository.deleteById(id);
     }
 }

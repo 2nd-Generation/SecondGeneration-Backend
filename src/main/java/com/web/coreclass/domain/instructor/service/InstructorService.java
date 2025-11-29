@@ -5,6 +5,7 @@ import com.web.coreclass.domain.instructor.dto.InstructorDto;
 import com.web.coreclass.domain.instructor.entity.Instructor;
 import com.web.coreclass.domain.instructor.entity.InstructorGame;
 import com.web.coreclass.domain.instructor.repository.InstructorRepository;
+import com.web.coreclass.global.s3.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class InstructorService {
 
+    private final S3Uploader s3Uploader;
     private final InstructorRepository instructorRepository;
 
     /**
@@ -124,8 +126,20 @@ public class InstructorService {
      * (D) Delete: 강사 삭제
      */
     public void deleteInstructor(Long id) {
-        // CascadeType.ALL, orphanRemoval=true 설정으로
-        // 강사 삭제 시 관련 경력, 게임 매핑도 모두 자동 삭제됨
+        // 1. 삭제할 강사 정보를 먼저 조회 (이미지 URL을 얻기 위해)
+        Instructor instructor = instructorRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Instructor not found: " + id));
+
+        // 2. S3 이미지 삭제 (null 체크는 deleteFile 메서드 안에서 함)
+        s3Uploader.deleteFile(instructor.getProfileImgUrl());
+        s3Uploader.deleteFile(instructor.getSgeaLogoImgUrl());
+
+        // 3. (심화) 경력(CareerHistory)에 포함된 로고 이미지들도 삭제
+        instructor.getCareerHistories().forEach(career -> {
+            s3Uploader.deleteFile(career.getLogoImgUrl());
+        });
+
+        // 4. DB 데이터 삭제
         instructorRepository.deleteById(id);
     }
 }
