@@ -29,12 +29,6 @@ WORKDIR /app
 COPY --from=build-stage /app/build/libs/coreclass-0.0.1-SNAPSHOT.jar app.jar
 
 # ------------------------------------------------------------------
-# 💡 중요: DB 설정을 외부에서 주입받기 위한 환경 변수
-# application.properties의 localhost 설정을 덮어씁니다.
-ENV SPRING_DATASOURCE_URL="second-generation-backend-db.c1wmgymweu6m.ap-northeast-2.rds.amazonaws.com"
-ENV SPRING_DATASOURCE_USERNAME="admin"
-ENV SPRING_DATASOURCE_PASSWORD="admin123!"
-# ------------------------------------------------------------------
 
 # 애플리케이션 포트 (Spring Boot 기본값 8080)
 EXPOSE 8080
