@@ -37,6 +37,11 @@ public class S3CleanupScheduler {
     @Value("${spring.cloud.aws.s3.bucket}")
     private String bucket;
 
+    private static final Set<String> FIXED_FILES = Set.of(
+            "overwatch2_logo.png",  // 예시 1: 기본 프로필 이미지
+            "valorant_logo.png"    // 예시 2: 고정 배너 이미지
+    );
+
     // 매일 새벽 4시에 실행 (초 분 시 일 월 요일)
     @Scheduled(cron = "0 0 4 * * *")
     public void cleanupOrphanImages() {
@@ -44,6 +49,9 @@ public class S3CleanupScheduler {
 
         // 1. DB에 등록된 '사용 중인' 이미지 파일명 다 모으기
         Set<String> validFileNames = new HashSet<>();
+
+        // 고정 파일들은 무조건 '사용 중'으로 처리해서 보호
+        validFileNames.addAll(FIXED_FILES);
 
         // (1) 강사 관련 이미지
         validFileNames.addAll(extractFileNames(instructorRepository.findAllProfileImgUrls()));
