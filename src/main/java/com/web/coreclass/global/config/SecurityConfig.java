@@ -73,6 +73,7 @@ public class SecurityConfig {
 
                         // --- Article (공지) API 권한 설정 ---
                         .requestMatchers(HttpMethod.GET, "/api/article").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/article/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/article").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/article/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/article/**").hasRole("ADMIN")
