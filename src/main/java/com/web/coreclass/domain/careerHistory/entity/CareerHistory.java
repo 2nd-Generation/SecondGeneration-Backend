@@ -35,4 +35,7 @@ public class CareerHistory extends BaseEntity {
 
     @Column(name = "logo_img_url", length = 1000)
     private String logoImgUrl;
+
+    @Column(name = "display_order")
+    private Integer displayOrder;
 }
