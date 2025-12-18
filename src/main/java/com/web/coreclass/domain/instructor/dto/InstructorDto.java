@@ -134,7 +134,7 @@ public class InstructorDto {
 
             // 엔티티 리스트 -> DTO 리스트로 변환
             this.careers = instructor.getCareerHistories().stream()
-                    .sorted(Comparator.comparing(CareerHistory::getDisplayOrder)) // 정렬 수행
+                    .sorted(Comparator.comparing(CareerHistory::getDisplayOrder, Comparator.nullsLast(Comparator.naturalOrder()))) // 정렬 수행
                     .map(CareerHistoryResponse::new)
                     .collect(Collectors.toCollection(LinkedHashSet::new)); // LinkedHashSet으로 순서 유지
 
