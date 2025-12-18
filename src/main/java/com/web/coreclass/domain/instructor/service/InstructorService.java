@@ -1,5 +1,6 @@
 package com.web.coreclass.domain.instructor.service;
 
+import com.web.coreclass.domain.careerHistory.entity.CareerHistory;
 import com.web.coreclass.domain.game.entity.GameType;
 import com.web.coreclass.domain.instructor.dto.InstructorDto;
 import com.web.coreclass.domain.instructor.entity.Instructor;
@@ -33,6 +34,13 @@ public class InstructorService {
         instructor.setProfileImgUrl(request.getProfileImgUrl());
         instructor.setSgeaLogoImgUrl(request.getSgeaLogoImgUrl());
         instructor.setContent(request.getContent());
+
+        List<InstructorDto.InstructorCreateRequest.CareerHistoryRequest> careerdtos = request.getCareers();
+        for (int i = 0; i < careerdtos.size(); i++) {
+            CareerHistory history = careerdtos.get(i).toEntity();
+            history.setDisplayOrder(i + 1); // 1, 2, 3... 순서 저장
+            instructor.addCareerHistory(history);
+        }
 
         // 2. CareerHistory 엔티티 생성 및 연관관계 매핑 (Cascade)
         request.getCareers().forEach(careerDto -> {
@@ -107,9 +115,13 @@ public class InstructorService {
         instructor.getGames().clear();
 
         // 4. DTO의 새 데이터로 다시 채우기 (CascadeType.ALL로 INSERT 쿼리 발생)
-        request.getCareers().forEach(careerDto -> {
-            instructor.addCareerHistory(careerDto.toEntity());
-        });
+        // 새 데이터 채우기 (순서 저장 포함)
+        List<InstructorDto.InstructorCreateRequest.CareerHistoryRequest> careerDtos = request.getCareers();
+        for (int i = 0; i < careerDtos.size(); i++) {
+            CareerHistory history = careerDtos.get(i).toEntity();
+            history.setDisplayOrder(i + 1); // 리스트의 인덱스를 순서로 저장
+            instructor.addCareerHistory(history);
+        }
 
         request.getGameNames().forEach(gameName -> {
             // 💡 DB 조회가 아니라 Enum에서 바로 변환 (에러 걱정 없음)
