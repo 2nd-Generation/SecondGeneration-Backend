@@ -87,6 +87,9 @@ public class SecurityConfig {
 
                         // --- 이미지 업로드 API는 ADMIN 권한 필요 ---
                         .requestMatchers(HttpMethod.POST, "/api/image/upload").hasRole("ADMIN")
+
+                        // --- 구글 폼 API 권한 설정 ---
+                        .requestMatchers(HttpMethod.POST, "/api/google-form/submit").permitAll()
                         // --- 그 외 모든 요청 ---
                         .anyRequest().authenticated()
                 )
