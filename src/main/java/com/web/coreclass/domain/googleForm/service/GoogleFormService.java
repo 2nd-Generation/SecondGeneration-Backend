@@ -45,9 +45,9 @@ public class GoogleFormService {
         String pageHistory = "0"; // 기본 첫 페이지
 
         if ("VALORANT".equals(request.getDesiredGame())) {
-            pageHistory = "0,1,2,3"; // 동의 -> 종목선택 -> 발로란트 -> 정보입력
+            pageHistory = "0,1,2,4"; // 동의 -> 종목선택 -> 발로란트 -> 정보입력
         } else if ("OVERWATCH".equals(request.getDesiredGame())) {
-            pageHistory = "0,1,3,4"; // 동의 -> 종목선택 -> 오버워치 -> 정보입력 (번호 예시)
+            pageHistory = "0,1,3,4"; // 동의 -> 종목선택 -> 오버워치 -> 정보입력
         }
 
         formData.add("pageHistory", pageHistory);
