@@ -42,6 +42,15 @@ public class GoogleFormService {
         formData.add("entry.1603110817", request.getGuardianName());
         formData.add("entry.76570193", request.getGuardianPhoneNumber());
 
+        String pageHistory = "0"; // 기본 첫 페이지
+
+        if ("VALORANT".equals(request.getDesiredGame())) {
+            pageHistory = "0,1,2,3"; // 동의 -> 종목선택 -> 발로란트 -> 정보입력
+        } else if ("OVERWATCH".equals(request.getDesiredGame())) {
+            pageHistory = "0,1,3,4"; // 동의 -> 종목선택 -> 오버워치 -> 정보입력 (번호 예시)
+        }
+
+        formData.add("pageHistory", pageHistory);
         // 구글 폼으로 POST 전송 (form-urlencoded 방식)
         restClient.post()
                 .uri(GOOGLE_FORM_URL)
