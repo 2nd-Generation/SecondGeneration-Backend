@@ -51,6 +51,17 @@ public class ArticleController {
     }
 
     /**
+     * (R) Read Detail: 게시글 상세 조회
+     * [GET] /api/article/{id}
+     */
+    @GetMapping("/{id}")
+    @Operation(summary = "공지 상세 조회", description = "공지 Id 값으로 상세 내용 조회")
+    public ResponseEntity<ArticleDto.ArticleDetailResponse> getArticleDetail(@PathVariable Long id) {
+        ArticleDto.ArticleDetailResponse detail = articleService.getArticleDetails(id);
+        return ResponseEntity.ok(detail);
+    }
+
+    /**
      * (R) Read Popup List: 팝업 게시글 목록 조회
      * [GET] /api/article/popups
      */

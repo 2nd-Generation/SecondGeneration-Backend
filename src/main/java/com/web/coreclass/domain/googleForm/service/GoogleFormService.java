@@ -41,6 +41,7 @@ public class GoogleFormService {
         formData.add("entry.1475828191", request.getDiscordId());
         formData.add("entry.1603110817", request.getGuardianName());
         formData.add("entry.76570193", request.getGuardianPhoneNumber());
+        formData.add("entry.1032992370", request.getKnowSgeaPath());
 
         String pageHistory = "0"; // 기본 첫 페이지
 

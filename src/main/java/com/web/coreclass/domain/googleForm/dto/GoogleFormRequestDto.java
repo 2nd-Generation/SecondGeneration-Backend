@@ -25,7 +25,7 @@ public class GoogleFormRequestDto {
     private String overwatchClass;        // entry.902463495
     @Schema(description = "현재 티어", example = "랭커 (TOP500), 챔피언 (Champion), 그랜드 마스터(Grand master), 마스터(Master), 다이아몬드(Diamond), 플레티넘(Platinum), 골드(Gold), 실버(Silver), 브론즈(Bronze), 언랭(Unranked)")
     private String overwatchTier;         // entry.565147399
-    @Schema(description = "주 포지션", example = "탱커, 척후대 (Initiator), 딜러, 힐러")
+    @Schema(description = "주 포지션", example = "탱커, 딜러, 힐러")
     private String overwatchPosition;     // entry.1532619185
 
     // 지원자 정보
@@ -47,4 +47,6 @@ public class GoogleFormRequestDto {
     private String guardianName;          // entry.1603110817
     @Schema(description = "보호자 핸드폰 번호", example = "010-0000-0000")
     private String guardianPhoneNumber;    // entry.76570193
+    @Schema(description = "SGEA를 어떻게 알게되셨나요?", example = "지인 추천, 인터넷 검색(네이버 / 구글), SGEA 인스타그램, 타 인스타그램, 기타(자유롭게 작성)")
+    private String knowSgeaPath;
 }

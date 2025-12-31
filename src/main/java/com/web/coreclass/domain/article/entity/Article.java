@@ -27,7 +27,7 @@ public class Article extends BaseEntity {
     @Column(nullable = false)
     private String title; // SGEA 아카데미 오픈 특별 이벤트
 
-    @Column(name = "sub_title", nullable = false)
+    @Column(name = "sub_title", nullable = true)
     private String subTitle; // 아카데미 런칭 기념 무료 체험 강의 및 장기 등록 할인 혜택
 
     @Lob
